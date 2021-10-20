@@ -1,17 +1,26 @@
 package bank.database;
 import bank.exception.HandledException;
 import bank.interfaces.InterfaceCommon;
+import bank.logic.LogicLayer;
 import bank.pojo.CustomerInfo;
 import historyPojo.History;
 import pojo_account.AccountInfo;
+
+import java.awt.List;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.sound.midi.Soundbank;
+import javax.swing.text.html.HTMLDocument.Iterator;
 
 import TransactionHistory.TransactionHistoryPojo;
+import allHistoryPojo.AllHistory;
 
-public class DbStore implements InterfaceCommon {
+public class DbStore implements InterfaceCommon{
     static Connection con = null;
     public DbStore(){
 
@@ -25,6 +34,35 @@ public class DbStore implements InterfaceCommon {
             e.printStackTrace();
         }
     }
+    
+    //bank Charges history
+    public void bankCharges(long accountNumber, String process, long balance) {
+    	PreparedStatement st = null;
+        
+        try {
+            String sql = "INSERT INTO charges (customerAccountNumber,process,amount,date) VALUES ( ?, ?, ?,now())";
+            st = con.prepareStatement(sql);
+            	st.setLong(1, accountNumber);
+                st.setString(2, process);
+                st.setLong(3, balance);
+                
+                st.executeUpdate();
+               }
+        catch (Exception e){
+            System.out.println("toString(): " + e.toString());
+            System.out.println("getMessage(): " + e.getMessage());
+       }
+       try {
+		st.close();
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+       System.out.print("History updated");
+    }
+    
+    
+    
     //check account number exist
     public boolean checkAccountNumber(long acc_num) {
     	PreparedStatement st = null;
@@ -111,13 +149,135 @@ public ArrayList<CustomerInfo> getCustomerList() {
         	System.out.println(e);
         }
 					
-
+    System.out.print(customerList);
 	return customerList;
+}
+public HashMap<Long, ArrayList<AllHistory>> allHistory(long accountNumber) {
+	ArrayList<AllHistory> list = new ArrayList<AllHistory>();
+	HashMap<Long, ArrayList<AllHistory>> map = new HashMap<Long, ArrayList<AllHistory>>();
+	
+	PreparedStatement st = null;
+	ResultSet rst = null;
+	
+    try {
+    	String sql1 = "SELECT * FROM history LEFT OUTER JOIN transactionHistory ON history.customerAccountNumber=transactionHistory.SenderAccountNumber or history.customerAccountNumber =  transactionHistory.receiverAccountNumber where history.customerAccountNumber=?";
+    	//String sql1 = "SELECT * FROM history LEFT OUTER JOIN transactionHistory ON history.customerAccountNumber=transactionHistory.SenderAccountNumber or history.customerAccountNumber =  transactionHistory.receiverAccountNumber where history.customerAccountNumber=? UNION SELECT * FROM history RIGHT OUTER JOIN transactionHistory ON  history.customerAccountNumber=transactionHistory.SenderAccountNumber or history.customerAccountNumber =  transactionHistory.receiverAccountNumber where history.customerAccountNumber=?";
+    	//String sql1 = "select distinct * from history as h left join transactionHistory as th on h.customerAccountNumber = th.senderAccountNumber or h.customerAccountNumber =  th.receiverAccountNUmber where h.customerAccountNumber=?";
+    	st = con.prepareStatement(sql1);
+    	st.setLong(1, accountNumber);
+    	//st.setLong(2, accountNumber);
+    	
+	    rst = st.executeQuery();
+	   while(rst.next()) {
+		   long acc_Number= rst.getLong(2);
+		   String process = rst.getString(3);
+		   long balance= rst.getLong(4);
+		   String date = rst.getString(5);
+		   
+		   long sender= rst.getLong(8);
+		   long receiver= rst.getLong(10);
+		   long balance1= rst.getLong(11);
+		   String date1 = rst.getString(12);
+		   String process1=null;
+		   if(acc_Number==sender) {
+			   process1="send to Account Number"+receiver;
+			   
+		   }else {
+			   process1 = "receive from Account Number"+sender;
+		   }
+		   if(!map.containsKey(acc_Number) ) {
+			   if(sender!='\0') {
+			   AllHistory allHistory = new AllHistory();
+			   allHistory.setProcess(process);
+			   allHistory.setAmount(balance);
+			   allHistory.setDate(date);
+			   AllHistory allHistory1 = new AllHistory();
+			   allHistory1.setProcess(process1);
+			   allHistory1.setAmount(balance1);
+			   allHistory1.setDate(date1);
+			   list.add(allHistory);
+			   list.add(allHistory1);
+			   map.put(acc_Number, list);
+			   }
+			   else {
+				   AllHistory allHistory = new AllHistory();
+				   allHistory.setProcess(process);
+				   allHistory.setAmount(balance);
+				   allHistory.setDate(date);
+				   list.add(allHistory);
+				   map.put(acc_Number, list);
+				   //System.out.print(map);
+			   }
+		   }
+		  
+		   else {
+			   if(sender!='\0') {
+			   ArrayList<AllHistory> list1 =   map.get(acc_Number);
+			   int j=0,k=0;
+			   for(int i=0;i<list1.size();i++) {
+				   AllHistory allHistory2 =  list1.get(i);
+				   
+				   if(date.equals(allHistory2.getDate())) {
+					   j=1;
+				   }
+				   else if (date1.equals(allHistory2.getDate())) {
+					k=1;
+				}
+			   }
+			   if(j==0) {
+				   AllHistory allHistory = new AllHistory();
+				   allHistory.setProcess(process);
+				   allHistory.setAmount(balance);
+				   allHistory.setDate(date);
+				   list1.add(allHistory);
+				   
+			   }if(k==0) {
+				   AllHistory allHistory1 = new AllHistory();
+				   allHistory1.setProcess(process1);
+				   allHistory1.setAmount(balance1);
+				   allHistory1.setDate(date1);
+				   list1.add(allHistory1);
+			   }
+			   map.put(acc_Number, list1);
+			   }
+			   else {
+				   ArrayList<AllHistory> list1 =   map.get(acc_Number);
+				   int j=0;
+				   for(int i=0;i<list1.size();i++) {
+					   AllHistory allHistory2 =  list1.get(i);
+					   
+					   if(date.equals(allHistory2.getDate())) {
+						   j=1;
+					   }
+					 
+				   }
+				   if(j==0) {
+					   AllHistory allHistory = new AllHistory();
+					   allHistory.setProcess(process);
+					   allHistory.setAmount(balance);
+					   allHistory.setDate(date);
+					   list1.add(allHistory);
+					   
+				   }
+				   map.put(acc_Number, list1);
+			   }
+		   }
+			   
+		 //System.out.print(map);
+		   
+		   
+	   }
+	   
+	   }catch (Exception e) {
+		// TODO: handle exception
+	}
+	
+    return map;
 }
 
 //show customerList - InActive
 public ArrayList<CustomerInfo> getInActiveCustomerList() {
-	ArrayList<CustomerInfo> customerList = new ArrayList<CustomerInfo>();
+	ArrayList<CustomerInfo> customerList1 = new ArrayList<CustomerInfo>();
 	Statement st = null;
     ResultSet rs = null;
     try {
@@ -133,7 +293,7 @@ public ArrayList<CustomerInfo> getInActiveCustomerList() {
           object.setId(customer_id);
           object.setName(name);
           object.setMobileNumber(mobile);
-          customerList.add(object);
+          customerList1.add(object);
 
         }
     }
@@ -141,8 +301,9 @@ public ArrayList<CustomerInfo> getInActiveCustomerList() {
         	System.out.println(e);
         }
 					
-
-	return customerList;
+    System.out.print(customerList1);
+	return customerList1;
+	
 }
 //show accountList - Inactive
 public ArrayList<AccountInfo> getInActiveAccountList() {
@@ -305,7 +466,7 @@ public long withDraw(long accountNumber) {
     	st.setLong(1, acc_num);
 	    rst = st.executeQuery();
 	    while(rst.next()) {
-           balance = rst.getLong(5);
+           balance = rst.getLong(4);
             
             System.out.println();
          }
@@ -466,75 +627,78 @@ public ArrayList<TransactionHistoryPojo> showTransactionHistory() {
 
 
 //end
-    public HashMap<Long, AccountInfo> showFromAccountTableAll() throws Exception {
-        Statement st = null;
-        ResultSet rs = null;
-        HashMap<Long, AccountInfo> accountInfoHashMap = new HashMap<>();
-
-        try {
-            st = con.createStatement();
-            rs = st.executeQuery("SELECT * from accountInfo");
-
-            while (rs.next()) {
-                AccountInfo pda = new AccountInfo();
-                Integer customer_id = rs.getInt("customerId");
-                Long accountNumber = rs.getLong("customerAccountNumber");
-                String bankName = rs.getString("customerBankName");
-                Long balance = rs.getLong("customerBalance");
-
-              pda.setId(customer_id);
-              pda.setAccountNumber(accountNumber);
-              pda.setBankName(bankName);
-              pda.setBalance(balance);
-              accountInfoHashMap.put(accountNumber,pda);
-
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-
-            throw new HandledException("dghghg");
-        }
-
-        rs.close();
-        st.close();
-
-        return accountInfoHashMap;
-
-    }
-
-    public HashMap<Long, AccountInfo> showFromAccountTable() throws SQLException {
-        Statement st = null;
-        ResultSet rs = null;
-        HashMap<Long, AccountInfo> accountHashMap = new HashMap<>();
-
-        try {
-            st = con.createStatement();
-            rs = st.executeQuery("SELECT * from accountInfo where status = 1 ");
-
-            while (rs.next()) {
-                AccountInfo pda = new AccountInfo();
-                Integer customer_id = rs.getInt("customerId");
-                Long accNumber = rs.getLong("customerAccountNumber");
-                String bank = rs.getString("customerBankName");
-                Long balance = rs.getLong("customerBalance");
-
-                pda.setId(customer_id);
-                pda.setAccountNumber(accNumber);
-                pda.setBankName(bank);
-                pda.setBalance(balance);
-                accountHashMap.put(accNumber,pda);
-
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-            rs.close();
-            st.close();
-
-        return accountHashMap;
-
-    }
+//    public HashMap<Long, AccountInfo> showFromAccountTableAll() throws Exception {
+//        Statement st = null;
+//        ResultSet rs = null;
+//        HashMap<Long, AccountInfo> accountInfoHashMap = new HashMap<>();
+//
+//        try {
+//            st = con.createStatement();
+//            rs = st.executeQuery("SELECT * from accountInfo");
+//
+//            while (rs.next()) {
+//                AccountInfo pda = new AccountInfo();
+//                Integer customer_id = rs.getInt("customerId");
+//                Long accountNumber = rs.getLong("customerAccountNumber");
+//                String bankName = rs.getString("customerBankName");
+//                Long balance = rs.getLong("customerBalance");
+//
+//              pda.setId(customer_id);
+//              pda.setAccountNumber(accountNumber);
+//              pda.setBankName(bankName);
+//              pda.setBalance(balance);
+//              accountInfoHashMap.put(accountNumber,pda);
+//
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//
+//            throw new HandledException("dghghg");
+//        }
+//
+//        rs.close();
+//        st.close();
+//
+//        return accountInfoHashMap;
+//
+//    }
+//
+//    public HashMap<Long, AccountInfo> showFromAccountTable() throws SQLException {
+//        Statement st = null;
+//        ResultSet rs = null;
+//        HashMap<Long, AccountInfo> accountHashMap = new HashMap<>();
+//
+//        try {
+//            st = con.createStatement();
+//            rs = st.executeQuery("SELECT * from accountInfo where status = 1 ");
+//
+//            while (rs.next()) {
+//                AccountInfo pda = new AccountInfo();
+//                Integer customer_id = rs.getInt("customerId");
+//                Long accNumber = rs.getLong("customerAccountNumber");
+//                String bank = rs.getString("customerBankName");
+//                Long balance = rs.getLong("customerBalance");
+//
+//                pda.setId(customer_id);
+//                pda.setAccountNumber(accNumber);
+//                pda.setBankName(bank);
+//                pda.setBalance(balance);
+//                accountHashMap.put(accNumber,pda);
+//
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//
+//            rs.close();
+//            st.close();
+//
+//        return accountHashMap;
+//
+//    }
+//    
+    //use
+    
     public int[] insertToCustomerTable(ArrayList<CustomerInfo> arrayList) throws SQLException {
 
         con.setAutoCommit(false);
@@ -586,6 +750,9 @@ public ArrayList<TransactionHistoryPojo> showTransactionHistory() {
         st.close();
         return cusIdArray;
     }
+    
+    //use
+    
     public int[] insertToAccountTable(ArrayList<AccountInfo> accountInfo) throws SQLException {
         con.setAutoCommit(false);
         PreparedStatement st = null;
@@ -612,17 +779,9 @@ public ArrayList<TransactionHistoryPojo> showTransactionHistory() {
             batchResults = null;
 
             batchResults = st.executeBatch();
-            //System.out.println("Batch insert successful. Committing.");
             con.commit();
 
-//          int ar[] =  st.executeBatch();
-//            for(int count : ar) {
-//              //  if(ar[i]!=1)
-//                System.out.println("There is an error in account table at id entered" +count);
-//            }
-
             }catch (BatchUpdateException e) {
-            //System.out.println("Error message: " + e.getMessage());
             batchResults = e.getUpdateCounts();
             System.out.println("Rolling back batch insertion");
             con.rollback();
@@ -637,11 +796,11 @@ public ArrayList<TransactionHistoryPojo> showTransactionHistory() {
 
     }
 
-
-
-
-
-
+//
+//
+//
+//
+//
     public void deleteFromCustomerTable(int id) throws SQLException {
      con.setAutoCommit(false);
         PreparedStatement st = null;
@@ -661,32 +820,52 @@ public ArrayList<TransactionHistoryPojo> showTransactionHistory() {
         st.close();
 
     }
+	@Override
+	public HashMap<Long, AccountInfo> showFromAccountTable() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public void closeConnection() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void updateCustomerStatus(int id) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public HashMap<Long, AccountInfo> showFromAccountTableAll() throws SQLException, Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-
-
-    public void updateCustomerStatus(int id) throws SQLException {
-        PreparedStatement st = null;
-        try {
-            int customerId = id;
-            String sql = "UPDATE customerInfo SET customerStatus = 0 WHERE customerId = ?";
-            st = con.prepareStatement(sql);
-            st.setInt(1, customerId);
-            st.executeUpdate();
-            System.out.println("status changd from customer");
-
-        }catch (SQLException e) {
-            e.printStackTrace();
-        }
-        st.close();
-    }
- 
-
-    public void closeConnection(){
-        try {
-            con.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+//
+//
+//    public void updateCustomerStatus(int id) throws SQLException {
+//        PreparedStatement st = null;
+//        try {
+//            int customerId = id;
+//            String sql = "UPDATE customerInfo SET customerStatus = 0 WHERE customerId = ?";
+//            st = con.prepareStatement(sql);
+//            st.setInt(1, customerId);
+//            st.executeUpdate();
+//            System.out.println("status changd from customer");
+//
+//        }catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        st.close();
+//    }
+// 
+//
+//    public void closeConnection(){
+//        try {
+//            con.close();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

@@ -19,7 +19,6 @@
             <th>Bank Name</th>
             <th>Account NUmber</th>
               <th>Balance</th>
-             <!--  <th>Delete</th> -->
          </tr>
          
          <c:forEach items = "${output}" var = "row">
@@ -28,11 +27,7 @@
                  <td> ${row.bankName}</td>
                    <td>${row.accountNumber}</td>
                      <td>${row.balance}</td>
-                   <!-- 
-                     <td><button><a href="http://localhost:8080/BankingApplication/MyServlett?page=deleteAccount&rowid=${row.id}&accountNumber=${row.accountNumber}" name="page">Delete</a>
-            </button></td>
-                   
-            -->
+                
             </tr>
          </c:forEach>
       </table>

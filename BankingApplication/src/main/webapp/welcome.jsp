@@ -7,11 +7,58 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   
 </head>
+<style>
+
+html{
+  height:100%
+}
+body{
+  height:100%;
+}
+.intro{
+  height:100%
+}
+
+.left{
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  background-color:#3d231b;
+  height : 100%;
+  color : #FFF;
+
+}
+.right{
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  background-color:#FFF;
+  height : 100%;
+  color : #3d231b;
+}
+@media (max-width: 1200px) { 
+  .left{
+    height:50%
+  }
+  .right{
+    height:50%
+  }
+}
+.about{
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  background-color:#000;
+  color : #FFF;
+  height:100%
+}
+
+</style>
 <body>
 
 <%@ include file = "header.jsp" %>
 <%@ include file = "sidenav.jsp" %>
-<p style="margin-left:165px;">
+<p style="margin-left:185px;">
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus tristique venenatis erat 
 vestibulum posuere. Curabitur ut fringilla augue. Nunc ac lectus quis dui pulvinar iaculis
 . Donec posuere tincidunt erat ut finibus. Nunc gravida tortor et odio facilisis, molestie 
@@ -53,6 +100,8 @@ In tincidunt semper mi id fringilla. Etiam lobortis dictum tristique. Phasellus 
 
 
 </p>
+
+
 <%@ include file = "footer.jsp" %>
 
 </body>

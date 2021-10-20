@@ -17,7 +17,7 @@
          <tr>
             <th>Id</th>
             
-            <th>Account NUmber</th>
+            <th>Account Number</th>
             <th>Process</th>
               <th>Balance</th>
               <th>Timing</th>

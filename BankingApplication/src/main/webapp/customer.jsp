@@ -12,7 +12,7 @@
 <body>
     <%@ include file = "header.jsp" %>
     <%@ include file = "sidenav.jsp" %>
-    <div class="main">
+    <div style="margin-left:185px; margin-top:20px;">
   <table  border = "1" width = "100%">
          <tr>
             <th>Id</th>
