@@ -53,56 +53,239 @@ body{
   height:100%
 }
 
+
 </style>
 <body>
 
 <%@ include file = "header.jsp" %>
-<%@ include file = "sidenav.jsp" %>
-<p style="margin-left:185px;">
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus tristique venenatis erat 
-vestibulum posuere. Curabitur ut fringilla augue. Nunc ac lectus quis dui pulvinar iaculis
-. Donec posuere tincidunt erat ut finibus. Nunc gravida tortor et odio facilisis, molestie 
-sodales arcu commodo. Phasellus aliquet lacus lectus, at egestas ante ultricies et. Maecenas 
-euismod, nisl a condimentum eleifend, nulla orci molestie est, non auctor purus metus mollis
- est. Duis et porttitor ante, vitae suscipit elit. Vestibulum fringilla est a tellus lacinia venenatis.
 
-Sed at dolor pellentesque risus ultricies consectetur. Suspendisse id ligula vel nunc dapibus
- cursus. Integer lobortis ornare arcu, vitae scelerisque ipsum iaculis sit amet. Nam eu porttitor 
- felis. Cras placerat metus id tellus consequat, eu malesuada ex sagittis. Nam eget efficitur 
- lectus. Phasellus eget imperdiet risus, at vehicula nisl. Nunc ullamcorper mauris lorem,
-  sed ornare libero ultrices et. Duis suscipit, lorem molestie feugiat egestas, ligula tortor
-   mattis ipsum, sed auctor dui lectus imperdiet magna. Curabitur finibus arcu at feugiat 
-   aliquet. Proin laoreet sapien augue, eget vehicula urna sollicitudin non. Nullam urna 
-   risus, dignissim vel ligula ut, accumsan molestie augue. Proin pretium vestibulum risus, 
-   luctus efficitur lacus rutrum ut. Pellentesque tempus eu lorem ac volutpat. Aenean at velit
-    condimentum, dapibus nunc non, semper neque.
-    Cras fermentum augue quam, eget feugiat nulla venenatis non. Class aptent taciti sociosqu ad
-     litora torquent per conubia nostra, per inceptos himenaeos. Cras sapien justo, laoreet at 
-     eros ultricies, volutpat aliquam urna. Vivamus sollicitudin, massa ac finibus ullamcorper, 
-     massa elit ultrices lacus, eu feugiat magna leo ut augue. In hac habitasse platea dictumst.
-      Donec dignissim et libero eleifend consequat. Ut eu tellus aliquet, commodo orci nec, 
-      ullamcorper mauris. Phasellus non fringilla tellus, quis blandit nunc. Cras massa nisi, 
-      efficitur et accumsan a, fringilla a odio. Maecenas risus leo, cursus faucibus nunc nec, 
-      eleifend dictum sem. Nullam vehicula ipsum tortor, quis condimentum nibh consequat vitae. 
-      Suspendisse viverra quam nisi, in sollicitudin magna tincidunt nec. Vivamus ut dictum felis.
 
-In tincidunt semper mi id fringilla. Etiam lobortis dictum tristique. Phasellus imperdiet rhoncus
- nibh a imperdiet. In gravida justo sed rhoncus dictum. Fusce ornare facilisis blandit. Maecenas 
- gravida est et diam faucibus scelerisque. Ut varius, dui ut mollis pulvinar, elit purus efficitur 
- leo, et ultrices lorem magna a lectus. Duis vehicula odio at dictum eleifend. Suspendisse sed venenatis 
- odio. Quisque ut metus eu justo sodales efficitur eu sit amet ex. Sed at eleifend quam, vel ultricies
-  nulla. Nam ut tincidunt orci, eu dignissim est. Sed dolor mauris, maximus et dolor et, gravida varius 
-  nisl. Quisque vestibulum, purus nec placerat rhoncus, nulla metus commodo lectus, at fringilla lectus
-   dolor in erat. Vivamus imperdiet felis a fringilla commodo. Sed ut nisl scelerisque nisl tempus convallis vel nec lorem.
+ 
+   
+     <div class="container">
+  <form action="MyServlett" method="POST">
+    <div class="col">
+    <div class="container">
+    <div class="text-center">
+       <div class="form-group row" >
+        <label for="name" class="col-sm-12 col-form-label fw-bold mb-2 text-uppercase "><b>User Login</b></label>
+       
+    </div>
+    <div class="form-group row" >
+        <label for="name" class="col-sm-3 col-form-label">Id</label>
+        <div class="col-sm-9" >
+            <input type="text" name = "Id" class="form-control" id="id" placeholder="Enter your id" required>
+           
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="name" class="col-sm-3 col-form-label">Acc Number</label>
+        <div class="col-sm-9">
+            <input type="text" name = "AccountNumber" class="form-control" id="accountNumber" placeholder="Enter your Account Number" required>
+           
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <button type="submit"  id="btn1" class="btn btn-primary" name="page" value="loginSubmit" > Login</button><br><br>
+            <p>Don't you have account?<a href="http://localhost:8080/BankingApplication/MyServlett?page=addcustomer">Register here</a></p>
+          
+        </div>
+        </div>
+    </div>
+  
+  </div>
+ 
+ </div>
+ </form>
+ </div>
+ <div class="container">
+ <p>
+ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam euismod malesuada auctor. Nullam elementum elit felis, in convallis nisl volutpat vitae. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nulla facilisi. Pellentesque vel cursus elit. In euismod ex sed nisi rhoncus, sit amet ultrices sem tincidunt. Fusce pulvinar ex quis dui sollicitudin tincidunt. Etiam metus lorem, venenatis ac erat nec, dapibus semper arcu. Suspendisse auctor massa quis neque molestie, non accumsan nisl vulputate. Vestibulum sed euismod quam.
 
+Etiam porttitor ipsum sollicitudin ipsum dictum tincidunt. Aenean ullamcorper libero id blandit posuere. Cras accumsan tincidunt justo, id lobortis massa feugiat ut. Suspendisse elit sem, ultricies id sodales tempor, auctor eu risus. Curabitur in elementum diam, vel vulputate diam. Pellentesque porttitor eget elit non finibus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae;
+
+consectetur. Etiam vitae volutpat sapien. Suspendisse sapien odio, iaculis ut ornare eu, tincidunt ac ligula. Mauris viverra interdum quam quis consectetur. Donec aliquet ex nisi, id ullamcorper enim laoreet elementum. Nulla facilisi. Duis feugiat elit eget diam pulvinar laoreet. Proin id varius quam, a consequat nisl. Curabitur imperdiet, lorem sed placerat pulvinar, tortor nunc placerat tortor, sed fringilla sapien nulla sit amet elit. Ut porttitor, dui sed cursus consequat, nisl lacus commodo ante, ut consequat sem nibh ac mi. Nunc bibendum arcu at purus eleifend aliquet. Donec urna ante, malesuada eu mauris quis, sodales pharetra purus. Proin sed elit vitae leo auctor pellentesque. Duis nec pulvinar ante.
+ </p>
+
+
+    <div>
+    <button> <a href="http://localhost:8080/BankingApplication/MyServlett?page=customer">Admin</a></button>
+   </div>
+   
     
 
-
-
-</p>
+    </div>
 
 
 <%@ include file = "footer.jsp" %>
 
+
+
+
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<%-- <%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  
+</head>
+<style>
+
+html{
+  height:100%
+}
+body{
+  height:100%;
+}
+.intro{
+  height:100%
+}
+
+.left{
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  background-color:#3d231b;
+  height : 100%;
+  color : #FFF;
+
+}
+.right{
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  background-color:#FFF;
+  height : 100%;
+  color : #3d231b;
+}
+@media (max-width: 1200px) { 
+  .left{
+    height:50%
+  }
+  .right{
+    height:50%
+  }
+}
+.about{
+  display : flex;
+  justify-content : center;
+  align-items : center;
+  background-color:#000;
+  color : #FFF;
+  height:100%
+}
+
+
+</style>
+<body>
+
+<%@ include file = "header.jsp" %>
+
+<div class="container">
+  <form action="MyServlett" method="POST">
+    <div class="col">
+    <div class="container">
+    <div class="text-center">
+       <div class="form-group row" >
+        <label for="name" class="col-sm-12 col-form-label fw-bold mb-2 text-uppercase "><b>User Login</b></label>
+       
+    </div>
+    <div class="form-group row" >
+        <label for="name" class="col-sm-3 col-form-label">Id</label>
+        <div class="col-sm-9" >
+            <input type="text" name = "Id" class="form-control" id="id" placeholder="Enter your id" required>
+           
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="name" class="col-sm-3 col-form-label">Acc Number</label>
+        <div class="col-sm-9">
+            <input type="text" name = "AccountNumber" class="form-control" id="accountNumber" placeholder="Enter your Account Number" required>
+           
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <button type="submit"  id="btn1" class="btn btn-primary" name="page" value="loginSubmit" > Login</button><br><br>
+            <p>Don't you have account?<a href="http://localhost:8080/BankingApplication/MyServlett?page=addcustomer">Register here</a></p>
+          
+        </div>
+        </div>
+    </div>
+  
+  </div>
+ 
+ </div>
+ </form>
+ </div>
+
+ <div class="container">
+ <p>
+ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam euismod malesuada auctor. Nullam elementum elit felis, in convallis nisl volutpat vitae. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nulla facilisi. Pellentesque vel cursus elit. In euismod ex sed nisi rhoncus, sit amet ultrices sem tincidunt. Fusce pulvinar ex quis dui sollicitudin tincidunt. Etiam metus lorem, venenatis ac erat nec, dapibus semper arcu. Suspendisse auctor massa quis neque molestie, non accumsan nisl vulputate. Vestibulum sed euismod quam.
+
+Etiam porttitor ipsum sollicitudin ipsum dictum tincidunt. Aenean ullamcorper libero id blandit posuere. Cras accumsan tincidunt justo, id lobortis massa feugiat ut. Suspendisse elit sem, ultricies id sodales tempor, auctor eu risus. Curabitur in elementum diam, vel vulputate diam. Pellentesque porttitor eget elit non finibus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae;
+
+consectetur. Etiam vitae volutpat sapien. Suspendisse sapien odio, iaculis ut ornare eu, tincidunt ac ligula. Mauris viverra interdum quam quis consectetur. Donec aliquet ex nisi, id ullamcorper enim laoreet elementum. Nulla facilisi. Duis feugiat elit eget diam pulvinar laoreet. Proin id varius quam, a consequat nisl. Curabitur imperdiet, lorem sed placerat pulvinar, tortor nunc placerat tortor, sed fringilla sapien nulla sit amet elit. Ut porttitor, dui sed cursus consequat, nisl lacus commodo ante, ut consequat sem nibh ac mi. Nunc bibendum arcu at purus eleifend aliquet. Donec urna ante, malesuada eu mauris quis, sodales pharetra purus. Proin sed elit vitae leo auctor pellentesque. Duis nec pulvinar ante.
+ </p>
+
+
+    <div>
+    <button> <a href="http://localhost:8080/BankingApplication/MyServlett?page=customer">Admin</a></button>
+   </div>
+   
+    
+
+    </div>
+
+
+<%@ include file = "footer.jsp" %>
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+ --%>

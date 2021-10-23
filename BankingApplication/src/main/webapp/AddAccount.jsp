@@ -9,20 +9,20 @@
 </head>
 <body>
 <%@ include file = "header.jsp" %>
-  <%@ include file = "sidenav.jsp" %>
-<div style="margin-left:185px;">
+<%@ include file = "LoginSideNav.jsp" %> 
+<div>
 
 <div class="container">
     <div class="text-center">
     <h2>REGISTRATION FORM</h2></div>
 
     <!-- <form action="MyServlett" method="POST"> -->
-    <div class="form-group row">
+   <!--  <div class="form-group row">
         <label for="name" class="col-sm-2 col-form-label">Id</label>
         <div class="col-sm-10">
             <input type="text" name = "Id" class="form-control" id="id" placeholder="Enter your name" required>
         </div>
-    </div>
+    </div> -->
     <div class="form-group row">
         <label for="name" class="col-sm-2 col-form-label">Bank Name</label>
         <div class="col-sm-10">
@@ -31,12 +31,12 @@
     </div>
    
   
-    <div class="form-group row">
+   <!--  <div class="form-group row">
         <label for="accountNumber" class="col-sm-2 col-form-label">Account Number</label>
         <div class="col-sm-10">
             <input type="text" name="accountNumber" class="form-control" id="accountNumber" placeholder="Enter your Phone number" required>
         </div>
-    </div>
+    </div> -->
      <div class="form-group row">
         <label for="balance" class="col-sm-2 col-form-label">Balance</label>
         <div class="col-sm-10">
@@ -70,13 +70,13 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#accountSubmit").click(function(){
-		var id = $("#id").val();
+		//var id = $("#id").val();
 		var bankname = $("#bankname").val(); 
-		var accountNumber = $("#accountNumber").val();
+		//var accountNumber = $("#accountNumber").val();
 		var balance = $("#balance").val(); 
 		$.ajax({
 			type:'POST',
-			url:'MyServlett?Id='+id+'&bankname='+bankname+'&accountNumber='+accountNumber+'&balance='+balance+'&page=Submit',
+			url:'MyServlett?bankname='+bankname+'&balance='+balance+'&page=Submit',
 			success: function(result){
 				alert(result);
 			} 

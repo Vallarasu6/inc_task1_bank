@@ -8,16 +8,16 @@
 </head>
 <body>
 <%@ include file = "header.jsp" %>
-  <%@ include file = "sidenav.jsp" %>
-<div style="margin-left:165px;">
+  <%@ include file = "LoginSideNav.jsp" %>
+<div style="margin-left:175px;">
 <!-- <form action="MyServlett" method="POST"> -->
     
-     <div class="form-group row">
+     <!-- <div class="form-group row">
     <label for="name" class="col-sm-2 col-form-label">Account Number</label>
         <div class="col-sm-10">
             <input type="text" name = "accountNumber" class="form-control" id="accountNumber" placeholder="Enter Account Number" required>
         </div>
-    </div>
+    </div> -->
     <div class="form-group row">
         <label for="name" class="col-sm-2 col-form-label">Enter amount to withdraw</label>
         <div class="col-sm-10">
@@ -39,12 +39,12 @@
        $(document).ready(function(){
 	
 	$("#withdrawbtn").click(function(){
-		var accountNumber = $("#accountNumber").val();
+		//var accountNumber = $("#accountNumber").val();
 		var withDraw = $("#withDraw").val();
 		
 		$.ajax({
 			type:'POST',
-			url:'MyServlett?accountNumber='+accountNumber+'&withDrawAmount='+withDraw+'&page=withDrawSubmit',
+			url:'MyServlett?withDrawAmount='+withDraw+'&page=withDrawSubmit',
 			success: function(result){
 				alert(result);
 			} 

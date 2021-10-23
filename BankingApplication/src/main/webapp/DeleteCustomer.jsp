@@ -10,14 +10,8 @@
 
 <!-- <form action="MyServlett" method="POST"> -->
 <%@ include file = "header.jsp" %>
-  <%@ include file = "sidenav.jsp" %>
+  <%@ include file = "LoginSideNav.jsp" %>
 <div style="margin-left:165px;">
-    <div class="form-group row">
-        <label for="name" class="col-sm-2 col-form-label">Id</label>
-        <div class="col-sm-10">
-            <input type="text" name = "Id" class="form-control" id="id" placeholder="Enter customerId" required>
-        </div>
-    </div>
     
     <div class="form-group row">
         <div class="col-sm-6 text-center">
@@ -32,11 +26,11 @@
 $(document).ready(function(){
 	
 	$("#deleteCustomerBtn").click(function(){
-		var id = $("#id").val();
+		//var id = $("#id").val();
 		
 		$.ajax({
 			type:'POST',
-			url:'MyServlett?Id='+id+'&page=DeleteCustomerSubmit',
+			url:'MyServlett?page=DeleteCustomerSubmit',
 			success: function(result){
 				alert(result);
 			} 

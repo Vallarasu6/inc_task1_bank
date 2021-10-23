@@ -11,34 +11,34 @@
 <body>
 
 <%@ include file = "header.jsp" %>
-  <%@ include file = "sidenav.jsp" %>
+  <%@ include file = "LoginSideNav.jsp" %>
 <div style="margin-left:170px;">
   <!--   <form action="MyServlett" method="POST"> -->
-    <div class="form-group row">
+   <!--  <div class="form-group row">
         <label for="name" class="col-sm-2 col-form-label">Enter your Id</label>
         <div class="col-sm-10">
             <input type="text" name = "id" class="form-control" id="id" placeholder="Enter your Id" required>
         </div>
-    </div>
-     <div class="form-group row">
+    </div> -->
+     <!-- <div class="form-group row">
         <label for="name" class="col-sm-2 col-form-label">Enter your account Number</label>
         <div class="col-sm-10">
             <input type="text" name = "accountNumber" class="form-control" id="accountNumber" placeholder="Enter your account Number" required>
         </div>
-    </div>
+    </div> -->
      <div class="form-group row">
         <label for="name" class="col-sm-2 col-form-label">Enter Amount</label>
         <div class="col-sm-10">
             <input type="text" name = "amount" class="form-control" id="amount" placeholder="Enter Amount" required>
         </div>
     </div>
-    <div class="form-group row">
+    <!-- <div class="form-group row">
         <label for="name" class="col-sm-2 col-form-label">Enter receiver id</label>
         <div class="col-sm-10">
             <input type="text" name = "receiverId" class="form-control" id="receiverId" placeholder="Enter receiver id" required>
         </div>
     </div>
-   
+    -->
   
     <div class="form-group row">
         <label for="accountNumber" class="col-sm-2 col-form-label">Enter receiver Account Number</label>
@@ -74,14 +74,14 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#transactionBtn").click(function(){
-		var id = $("#id").val();
-		var accountNumber = $("#accountNumber").val();
+		//var id = $("#id").val();
+		//var accountNumber = $("#accountNumber").val();
 		var amount = $("#amount").val(); 
-		var receiverId = $("#receiverId").val(); 
+		//var receiverId = $("#receiverId").val(); 
 		var receiverAccountNumber = $("#receiverAccountNumber").val(); 
 		$.ajax({
 			type:'POST',
-			url:'MyServlett?id='+id+'&accountNumber='+accountNumber+'&amount='+amount+'&receiverId='+receiverId+'&receiverAccountNumber='+receiverAccountNumber+'&page=transactionSubmit',
+			url:'MyServlett?amount='+amount+'&receiverAccountNumber='+receiverAccountNumber+'&page=transactionSubmit',
 			success: function(result){
 				alert(result);
 			} 

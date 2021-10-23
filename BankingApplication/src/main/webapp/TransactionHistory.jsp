@@ -17,9 +17,9 @@
          <tr>
             <th>Id</th>
             
-            <th>Sender</th>
+            
             <th>Sender Account number</th>
-              <th>Receiver</th>
+             
               <th>Receiver Account number</th>
               <th>Amount</th>
               <th>Date</th>
@@ -28,10 +28,9 @@
          <c:forEach items = "${output}" var = "row">
             <tr>
                    <td>${row.id}</td>
-                    <td> ${row.senderId}</td>
+                   
                      <td>${row.senderAccountNumber}</td>
-                     <td> ${row.receiverId}</td>
-                     <td>${row.receiverAccountNumber}</td>
+                    <td>${row.receiverAccountNumber}</td>
                      <td>${row.amount}</td>
                      <td>${row.date}</td>
          

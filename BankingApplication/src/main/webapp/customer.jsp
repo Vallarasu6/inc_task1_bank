@@ -33,7 +33,7 @@
          </c:forEach>
       </table>
       <br><br>
-      <table width = "100%">
+     <!--  <table width = "100%">
       <tr>
             <th><button><a href="http://localhost:8080/BankingApplication/MyServlett?page=addcustomer">Add New Customer</a>
             </button></th>
@@ -42,7 +42,7 @@
             
        </tr>
          
-      </table>
+      </table> -->
  
 </div>
 <%@ include file = "footer.jsp" %>

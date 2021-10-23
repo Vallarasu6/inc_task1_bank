@@ -6,6 +6,8 @@ public class History {
 	private String process;
 	private long amount;
 	private String date;
+	
+	
 	public int getId() {
 		return id;
 	}
@@ -38,8 +40,9 @@ public class History {
 	}
 	@Override
 	public String toString() {
-		return "history [id=" + id + ", accountNumber=" + accountNumber + ", process=" + process + ", amount=" + amount
+		return "History [id=" + id + ", accountNumber=" + accountNumber + ", process=" + process + ", amount=" + amount
 				+ ", date=" + date + "]";
 	}
+	
 	
 }

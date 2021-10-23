@@ -39,10 +39,11 @@
 <a href="http://localhost:8080/BankingApplication/MyServlett?page=account">Account</a>
 <a href="http://localhost:8080/BankingApplication/MyServlett?page=inActiveCustomer">InActive Customer</a>
 <a href="http://localhost:8080/BankingApplication/MyServlett?page=inActiveAccount">InActive Account</a>
-<a href="http://localhost:8080/BankingApplication/MyServlett?page=withDraw">With Draw</a>
-<a href="http://localhost:8080/BankingApplication/MyServlett?page=deposit">Deposit</a>
-<a href="http://localhost:8080/BankingApplication/MyServlett?page=history">W/D History</a>
-<a href="http://localhost:8080/BankingApplication/MyServlett?page=transaction">Transaction</a>
-<a href="http://localhost:8080/BankingApplication/MyServlett?page=transactionHistory">Transaction History</a>
-<a href="http://localhost:8080/BankingApplication/MyServlett?page=allHistory">All history</a>
+<!-- <a href="http://localhost:8080/BankingApplication/MyServlett?page=withDraw">With Draw</a>
+<a href="http://localhost:8080/BankingApplication/MyServlett?page=deposit">Deposit</a> -->
+<a href="http://localhost:8080/BankingApplication/MyServlett?page=history">All Histories</a>
+<!-- <a href="http://localhost:8080/BankingApplication/MyServlett?page=transaction">Transaction</a>
+ -->
+<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=transactionHistory">Transaction History</a>
+ --><!-- <a href="http://localhost:8080/BankingApplication/MyServlett?page=allHistory">All history</a> -->
 </div>

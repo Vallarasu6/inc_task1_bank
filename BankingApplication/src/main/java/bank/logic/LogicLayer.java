@@ -16,6 +16,9 @@ import java.util.HashMap;
 
 import java.util.Properties;
 
+import javax.swing.plaf.synth.SynthFormattedTextFieldUI;
+
+import com.mysql.cj.x.protobuf.MysqlxExpect.Open.Condition.Key;
 
 import TransactionHistory.TransactionHistoryPojo;
 import allHistoryPojo.AllHistory;
@@ -24,6 +27,9 @@ public class LogicLayer {
 	
 	  private InterfaceCommon db;
 	    FileReader reader;
+	    long depositCharges=1;
+	    long withdrawCharges=1;
+	    long transactionCharges=2;
 
 	    public LogicLayer() {
 	        try {
@@ -31,18 +37,12 @@ public class LogicLayer {
 	            Properties properties=new Properties();
 	            properties.load(reader);
 	            String data = properties.getProperty("dbConnection");
-	            System.out.println(data+" Hi");
 	            db = (InterfaceCommon)Class.forName(data).newInstance();
 
 	        } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 	            e.printStackTrace();
 	        }
-
-
 	    }
-	
-	
-	
 //	
 //	DbStore db = null;
 //	
@@ -51,7 +51,56 @@ public class LogicLayer {
 //	  db = new DbStore();
 //	// TODO Auto-generated constructor stub
 //}
-   
+ 
+	    //change mobile number
+	    public void changeMobile(long mobile, int id) {
+			db.changeMobile(mobile,id);
+		}
+
+	    //change address
+	    public void changeAddress(String address, int id) {
+			db.changeAddress(address,id);
+		}
+	    
+	    
+	    //check balance
+	    public long checkBalance(long accountNumber) {
+	    	long balance = db.checkBalance(accountNumber);
+	    	return balance;
+			
+		}
+	    
+	    
+//check login
+	    public int checkLogin(int id,long accountNumber) {
+	    	ArrayList<Long> acc_Number = db.checkLogin(id);
+
+	    	int j=0;
+	    	for(int i=0;i<acc_Number.size();i++) {
+	    		if(acc_Number.get(i)==accountNumber) {
+	    			j=1;
+	    			break;
+	    		}
+	    	
+	    	}
+	    	if(j==1) {
+	    		return 1;
+	    	}else {
+	    		return 0;
+	    	}
+			
+		}
+	//show history
+	    
+	    
+	    public ArrayList<History> showHistory() {
+	    	return db.showHistory();
+	    }
+	    
+//	//transaction
+//	  public void transaction_history(long sender_accountNumber,long receiver_accountNumber,long balance) throws SQLException {
+//	  db.transaction_history(sender_accountNumber, receiver_accountNumber, balance);
+//	  }
    
  //check account number exist
    public boolean checkAccountNumber(long acc_num) {
@@ -59,6 +108,7 @@ public class LogicLayer {
    }
  //check customerid exist
    public boolean checkCustomerId(int id) {
+	  // System.out.print(id+" ll id");
 	   return db.checkCustomerId(id);
    }
 
@@ -111,196 +161,113 @@ public class LogicLayer {
 
    public void updateBalance(long balance,long acc_number) throws SQLException {
 	   db.updateBalance(balance, acc_number);
+	   //history(acc_number, "WithDraw", balance+1);
    }
    
 // W/D  History
 
 
 
-public void history(long accountNumber,String process,long balance) throws SQLException {
-	db.history(accountNumber, process, balance);
-}
+//public void history(long accountNumber,String process,long balance) throws SQLException {
+//	db.history(accountNumber, process, balance);
+//}
 
-public void bankCharges(long accountNumber, String process, long balance) {
-
-	db.bankCharges(accountNumber,process,balance);
-}
-
-//show history
+//public void bankCharges(long accountNumber, String process, long balance) {
+//
+//	db.bankCharges(accountNumber,process,balance);
+//}
 
 
-public ArrayList<History> showHistory() {
-	return db.showHistory();
-}
+//
 
-//transaction
-public void transaction_history(int senderId,long sender_accountNumber,int receiverId,long receiver_accountNumber,long balance) throws SQLException {
-db.transaction_history(senderId, sender_accountNumber, receiverId, receiver_accountNumber, balance);
-}
-//show transaction history
-public ArrayList<TransactionHistoryPojo> showTransactionHistory() {
-	return db.showTransactionHistory();
-}
+////show transaction history
+//public ArrayList<TransactionHistoryPojo> showTransactionHistory() {
+//	return db.showTransactionHistory();
+//}
 //show single account all history
-public ArrayList<AllHistory>  allHistory(long accountNumber) {
-	HashMap<Long, ArrayList<AllHistory>> map = db.allHistory(accountNumber);
-	ArrayList<AllHistory> list = map.get(accountNumber);
-	for(int i=0;i<list.size();i++) {
-		AllHistory allHistory = list.get(i);
-		String dateString = allHistory.getDate();
-		//System.out.println(dateString);
-		String tempString = "";
-		for(int j=0;j<dateString.length();j++) {
-			if(dateString.charAt(j)>='0' && dateString.charAt(j)<='9') {
-				tempString = tempString+dateString.charAt(j);
-			}
-		}
-		allHistory.setDate(tempString);
-		
-		//System.out.println(tempString+" date");
-		
-		
-	}
-	Collections.sort(list, new Comparator<AllHistory>() {
-        @Override
-        public int compare(AllHistory object1, AllHistory object2) {
-            return object2.getDate().compareTo(object1.getDate());
-        }
-});
-	
-	
-	
-	
+public ArrayList<History>  allHistory(long accountNumber) {
+	ArrayList<History> list = db.allHistory(accountNumber);
+//	//ArrayList<AllHistory> list = map.get(accountNumber);
 //	for(int i=0;i<list.size();i++) {
-//		AllHistory allHistory = list.get(i);
-//		System.out.println(allHistory.getDate());
-//		
-//		
+//		History allHistory = list.get(i);
+//		String dateString = allHistory.getDate();
+//		//System.out.println(dateString);
+//		String tempString = "";
+//		for(int j=0;j<dateString.length();j++) {
+//			if(dateString.charAt(j)>='0' && dateString.charAt(j)<='9') {
+//				tempString = tempString+dateString.charAt(j);
+//			}
+//		}
+//		allHistory.setDate(tempString);
+//				
 //	}
-	
-	
+//	Collections.sort(list, new Comparator<History>() {
+//        @Override
+//        public int compare(History object1, History object2) {
+//            return object2.getDate().compareTo(object1.getDate());
+//        }
+//});
+//	
+
 	return list;
 	
 }
-/*
- * public void allHistoryData(HashMap<Long, AllHistory> map) {
- * 
- * }
- */
-   
+
   //use  
-    public void addNewCustomers(ArrayList<CustomerInfo> customerList, ArrayList<AccountInfo> accountList){
-        int key[]= new int[0];
+    public long addNewCustomers(CustomerInfo customerInfo, AccountInfo accountInfo){
+//    	System.out.println(customerInfo);
+//    	System.out.println(accountInfo);
+        int key=0;
+        long accNumber=0;
         try {
-            key = db.insertToCustomerTable(customerList);
-            int size = key.length;
-        AccountInfo accountinfo = new AccountInfo();
-        for (int i=0;i<size;i++) {
-           accountinfo = accountList.get(i);
-            accountinfo.setId(key[i]);
-           // System.out.println(key[i]);
-
+            key = db.insertToCustomerTable(customerInfo);
+           
+            accountInfo.setId(key);
+            long bal = accountInfo.getBalance();
+            //accountInfo.setBalance(bal);
+       accNumber = db.insertToAccountTable(accountInfo);
+       //long balance = accountInfo.getBalance();
+       
+       //System.out.println(accNumber+" accountNumber"+accountInfo.getBalance()+" balance");
+        	history(accNumber,"Deposit",bal);
+      
         }
-        int batch[] = db.insertToAccountTable(accountList);
-        for(int i=0;i< batch.length;i++){
-            if(batch[i]!=1){
-                for(int j=0;j<size;j++){
-                    deleteCustomerData(key[j]);
-                    //System.out.println(key[j]);
-                }
-                System.out.println("No data stored, RollBacked");
-                break;
-            }
-        }
-        for (int i=0;i<size;i++) {
-            HashMapHandler.INSTANCE.store(accountinfo.getAccountNumber(),accountinfo,key[i]);
-        }
-        } catch (SQLException e) {
+            catch (SQLException e) {
             e.printStackTrace();
         }
+        return accNumber;
     }
-    public void accountInsert(ArrayList<AccountInfo> accountList)  {
-        try {
-        	
-            db.insertToAccountTable(accountList);
-            int size = accountList.size();
-            System.out.println("Logical layer account method worked");
-            for (int i = 0; i < size; i++) {
-                AccountInfo accountinfo = accountList.get(i);
-                HashMapHandler.INSTANCE.store(accountinfo.getAccountNumber(), accountinfo, accountinfo.getId());
-            }
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-    }
-//    public void showDataAll() throws Exception {
-//        try {
-//            HashMap<Long, AccountInfo> accountInfoHashMap=db.showFromAccountTableAll();
-//            //System.out.println("complete account "+accountInfoHashMap);
-//            for(Long i : accountInfoHashMap.keySet()){
-//                AccountInfo  accountInfo = accountInfoHashMap.get(i);
-//                HashMapHandler.INSTANCE.getDbHashMapAll(accountInfo.getAccountNumber(), accountInfo, accountInfo.getId());
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//            System.out.println(e.getMessage());
-//        }
-//    }
-//    public void showData() {
-//        try {
-//            HashMap<Long, AccountInfo> accountInfoHashMap=db.showFromAccountTable();
-//            for(Long i : accountInfoHashMap.keySet()){
-//                AccountInfo  accountInfo = accountInfoHashMap.get(i);
-//                HashMapHandler.INSTANCE.store(accountInfo.getAccountNumber(), accountInfo, accountInfo.getId());
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public void history(long accountNumber,String process, long balance) {
+    	db.history(accountNumber,process,balance);
+		
+	}
+    
+    //insert to account table
+    
+    
+    
+	public void accountInsert(AccountInfo accountInfo) {
+		// TODO Auto-generated method stub
+		long key=0;
+		 try {
+			 long bal = accountInfo.getBalance()-1;
+	            accountInfo.setBalance(bal);
+	           key =  db.insertToAccountTable(accountInfo);
+	           System.out.println(key+" auto gen key");
+	           history(key, "Deposit", bal+1);
 
+	        }
+	        catch (SQLException e){
+	            e.printStackTrace();
+	        }
+	}
 
-//    public void closeAll() {
-//        db.closeConnection();
-//    }
-//    public void deleteData(int delId){
-//        int id = delId;
-//        try {
-//            db.deleteFromAllTables(id);
-//            HashMapHandler.INSTANCE.dbHashMap.remove(id);
-//
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//    public void deleteAccountData(long accountNumber) throws HandledException{
-//    	long account_number = accountNumber;
-//    	
-//    	
-//    }
     public void deleteAccountData(int delId,long accountNumber) throws HandledException {
         int id = delId;
         long account_number = accountNumber;
         try{
             db.deleteFromAccountTable(account_number);
-            
-           // HashMapHandler.INSTANCE.dbHashMap.remove(id);
-//            HashMap<Long, AccountInfo> hash = HashMapHandler.INSTANCE.getAccountInfo(id);
-//           // if(hash.containsKey(account_number)) {
-//            System.out.print(hash);
-//                hash.remove(account_number);
-//                System.out.println("Size is " + hash.size());
-//
-//                if (hash.size() == 0) {
-//                    db.updateCustomerStatus(id);
-//                    HashMapHandler.INSTANCE.dbHashMap.remove(id);
-//                    System.out.println("Your data is completely deleted bcz of 0 accounts");
-//                }
-           // }
-//            else{
-//                System.out.println("The id is already inactive");
-//            }
-        }
+   }
         catch(SQLException e){
             e.printStackTrace();
         }
@@ -309,7 +276,6 @@ public ArrayList<AllHistory>  allHistory(long accountNumber) {
         int id = delId;
         try {
             db.deleteFromCustomerTable(id);
-            System.out.println("Logic layer delete"+id);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -350,6 +316,7 @@ if(map.containsKey(accNumber)) {
    public void updateCustomerStatusActive(int id, long accountNumber) throws SQLException {
         db.updateCustomerStatusToActive(id);
    }
+   
    public boolean checkExistId(int customerId){
        if(HashMapHandler.INSTANCE.dbHashMapAll.containsKey(customerId)) {
            return true;
@@ -374,4 +341,8 @@ if(map.containsKey(accNumber)) {
         }
 
         }
+
+
+
+
 }
