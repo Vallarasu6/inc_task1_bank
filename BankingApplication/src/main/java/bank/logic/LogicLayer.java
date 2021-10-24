@@ -132,6 +132,11 @@ public class LogicLayer {
 	   return db.getAccountList();
    }
    
+ //show Applied loans list
+   public ArrayList<AccountInfo> getAppliedLoanList() {
+	   return db.getAppliedLoanList();
+   }
+   
  //Delete both tables.
 
    public void deleteFromAllTables(int id) throws SQLException {
@@ -215,8 +220,7 @@ public ArrayList<History>  allHistory(long accountNumber) {
 
   //use  
     public long addNewCustomers(CustomerInfo customerInfo, AccountInfo accountInfo){
-//    	System.out.println(customerInfo);
-//    	System.out.println(accountInfo);
+
         int key=0;
         long accNumber=0;
         try {
@@ -229,7 +233,8 @@ public ArrayList<History>  allHistory(long accountNumber) {
        //long balance = accountInfo.getBalance();
        
        //System.out.println(accNumber+" accountNumber"+accountInfo.getBalance()+" balance");
-        	history(accNumber,"Deposit",bal);
+        	history(accNumber,"Deposit",bal,0);
+        	
       
         }
             catch (SQLException e) {
@@ -237,10 +242,32 @@ public ArrayList<History>  allHistory(long accountNumber) {
         }
         return accNumber;
     }
-    public void history(long accountNumber,String process, long balance) {
-    	db.history(accountNumber,process,balance);
+    //history
+    public void history(long accountNumber,String process, long balance, long bankCharges) {
+    	db.history(accountNumber,process,balance,bankCharges);
 		
 	}
+    //bank account
+    public void bankAccount(long charges) {
+    	db.bankAccount(charges);
+	}
+    
+    //client cache
+    public HashMap<Long, AccountInfo> clientCache(long accountNumber) {
+    	
+    	HashMap<Long, AccountInfo> map = db.clientCache(accountNumber);
+    	return map;
+    	
+	}
+    //loan Status Update
+    public void loanStatusUpdate(long accountNumber, String loanStatus) {
+		db.loanStatusUpdate(accountNumber,loanStatus);
+	}
+    
+//    //loanSubmit
+//    public void loanSubmit() {
+//		
+//	}
     
     //insert to account table
     
@@ -250,11 +277,11 @@ public ArrayList<History>  allHistory(long accountNumber) {
 		// TODO Auto-generated method stub
 		long key=0;
 		 try {
-			 long bal = accountInfo.getBalance()-1;
-	            accountInfo.setBalance(bal);
+			 long bal = accountInfo.getBalance();
+	            //accountInfo.setBalance(bal);
 	           key =  db.insertToAccountTable(accountInfo);
 	           System.out.println(key+" auto gen key");
-	           history(key, "Deposit", bal+1);
+	           history(key, "Deposit", bal,0);
 
 	        }
 	        catch (SQLException e){

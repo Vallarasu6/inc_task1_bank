@@ -42,6 +42,7 @@
 <!-- <a href="http://localhost:8080/BankingApplication/MyServlett?page=withDraw">With Draw</a>
 <a href="http://localhost:8080/BankingApplication/MyServlett?page=deposit">Deposit</a> -->
 <a href="http://localhost:8080/BankingApplication/MyServlett?page=history">All Histories</a>
+<a href="http://localhost:8080/BankingApplication/MyServlett?page=appliedLoans">Applied loans</a>
 <!-- <a href="http://localhost:8080/BankingApplication/MyServlett?page=transaction">Transaction</a>
  -->
 <!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=transactionHistory">Transaction History</a>

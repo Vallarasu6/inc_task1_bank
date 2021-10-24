@@ -90,6 +90,7 @@ $(document).ready(function(){
 </script>
 <a href="http://localhost:8080/BankingApplication/MyServlett?page=deleteAccounts">Delete Account</a>
 <a href="http://localhost:8080/BankingApplication/MyServlett?page=deleteCustomer">Delete Customer</a>
-           
+
+ <a href="http://localhost:8080/BankingApplication/MyServlett?page=clientLoan">Loan</a>          
  <a href="http://localhost:8080/BankingApplication/MyServlett?page=home">Logout</a>
 </div>

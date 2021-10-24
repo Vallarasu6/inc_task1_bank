@@ -6,6 +6,7 @@ public class History {
 	private String process;
 	private long amount;
 	private String date;
+	private long bankCharges;
 	
 	
 	public int getId() {
@@ -38,11 +39,19 @@ public class History {
 	public void setDate(String date) {
 		this.date = date;
 	}
+	
+	public long getBankCharges() {
+		return bankCharges;
+	}
+	public void setBankCharges(long bankCharges) {
+		this.bankCharges = bankCharges;
+	}
 	@Override
 	public String toString() {
 		return "History [id=" + id + ", accountNumber=" + accountNumber + ", process=" + process + ", amount=" + amount
-				+ ", date=" + date + "]";
+				+ ", date=" + date + ", bankCharges=" + bankCharges + "]";
 	}
+	
 	
 	
 }

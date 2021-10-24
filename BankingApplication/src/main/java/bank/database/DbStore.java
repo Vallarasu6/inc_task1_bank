@@ -35,6 +35,36 @@ public class DbStore implements InterfaceCommon{
             e.printStackTrace();
         }
     }
+    //bank account
+    
+    public void bankAccount(long charges) {
+    	PreparedStatement st = null;
+    	ResultSet rst = null;
+    	long balance=0;
+    	try {
+	    	String sql1 = "SELECT * from bankAccount where account=?";
+	    	st = con.prepareStatement(sql1);
+	    	st.setString(1, "loanAccount");
+	    	rst = st.executeQuery();
+	    	
+	 	   while(rst.next()) {
+	 		balance = rst.getLong("balance"); 
+	 		   }
+	 	   
+	 	   balance=balance+charges;
+	 	  String sql = "UPDATE bankAccount SET balance = ? WHERE account = ?";
+          st = con.prepareStatement(sql);
+          st.setLong(1, balance);
+          st.setString(2,"loanAccount");
+          
+          st.executeUpdate();
+	 	   
+	 }
+	 catch (Exception e) {
+		 System.out.print(e+" Error msg");
+	}
+		
+	}
     
     //update change ADDRESS
     
@@ -60,7 +90,31 @@ PreparedStatement st = null;
 			e.printStackTrace();
 		}
 	}
+    //update loan status
     
+    public void loanStatusUpdate(long accountNumber, String loanStatus) {
+PreparedStatement st = null;
+        
+        try {
+
+            String sql = "UPDATE accountInfo SET loanStatus = ? WHERE customerAccountNumber = ?";
+            st = con.prepareStatement(sql);
+
+            st.setString(1,loanStatus);
+            st.setLong(2, accountNumber);
+            st.executeUpdate();
+            
+            System.out.println("Status changes in loan");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+			st.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
     
 //update change mobile number
     
@@ -87,6 +141,43 @@ PreparedStatement st = null;
 			e.printStackTrace();
 		}
 	}
+    
+    //client cache
+    public HashMap<Long, AccountInfo> clientCache (long accountNumber) {
+    	HashMap<Long, AccountInfo> map = new HashMap<>();
+    	PreparedStatement st = null;
+    	ResultSet rs = null;
+    	
+        try {
+        	String sql1 = "SELECT * from accountInfo where customerAccountNumber= ?";
+        	st = con.prepareStatement(sql1);
+        	st.setLong(1, accountNumber);
+    	    rs = st.executeQuery();
+    	    while(rs.next()) {
+    	    	AccountInfo object = new AccountInfo();
+    	           Integer customer_id = rs.getInt("customerId");
+    	           Long AccountNumber = rs.getLong("customerAccountNumber");
+    	           String bankName = rs.getString("customerBankName");
+    	           Long balance = rs.getLong("customerBalance");
+    	           Integer status = rs.getInt("status");
+    	           String loanStatus = rs.getString("loanStatus");
+    	           object.setId(customer_id);
+    	           object.setAccountNumber(accountNumber);
+    	           object.setBankName(bankName);
+    	           object.setBalance(balance);
+    	           object.setLoanStatus(loanStatus);
+    	           map.put(AccountNumber, object);
+
+             }
+    	    
+        } catch (Exception e) {
+    		// TODO: handle exception
+    		 e.printStackTrace();
+    	}
+        return map;
+	}
+    
+    
     
     //check account number exist
     public boolean checkAccountNumber(long acc_num) {
@@ -366,6 +457,42 @@ public ArrayList<AccountInfo> getInActiveAccountList() {
 }
 
 
+//show Applied loan list
+public ArrayList<AccountInfo> getAppliedLoanList() {
+	ArrayList<AccountInfo> accountList = new ArrayList<AccountInfo>();
+	
+	PreparedStatement st = null;
+	ResultSet rs = null;
+	
+    try {
+    	String sql1 = "SELECT * FROM accountInfo where loanStatus=? and status=?";
+    	st = con.prepareStatement(sql1);
+    	st.setString(1,"Processing");
+    	st.setInt(2, 1);
+    	rs = st.executeQuery();
+      while (rs.next()) {
+         AccountInfo object = new AccountInfo();
+         Integer customer_id = rs.getInt("customerId");
+         Long accountNumber = rs.getLong("customerAccountNumber");
+         String bankName = rs.getString("customerBankName");
+         Long balance = rs.getLong("customerBalance");
+         object.setId(customer_id);
+         object.setAccountNumber(accountNumber);
+         object.setBankName(bankName);
+         object.setBalance(balance);
+         accountList.add(object);
+
+      }
+  }
+      catch (Exception e) {
+      	System.out.println(e);
+      }
+					
+
+	return accountList;
+}
+
+
 //show Accounts
 public ArrayList<AccountInfo> getAccountList() {
 	ArrayList<AccountInfo> accountList = new ArrayList<AccountInfo>();
@@ -530,7 +657,7 @@ public void updateBalance(long balance,long acc_number) throws SQLException {
 
 
 
-public void history(long accountNumber,String process,long balance) {
+public void history(long accountNumber,String process,long balance, long bankCharge) {
 PreparedStatement st = null;
     
     try {
@@ -539,7 +666,7 @@ PreparedStatement st = null;
             st.setLong(1, accountNumber);
             st.setString(2, process); 
             st.setLong(3, balance); 
-            st.setLong(4, 1); 
+            st.setLong(4, bankCharge); 
                
             st.executeUpdate();
            }
@@ -609,7 +736,7 @@ PreparedStatement st = null;
         int[] batchResults = new int[1];
         int cusAccNumber=0;
         try {
-            String sql = "INSERT INTO accountInfo (customerId,customerBankName,customerBalance,status) VALUES ( ?, ?, ?, ?)";
+            String sql = "INSERT INTO accountInfo (customerId,customerBankName,customerBalance,status,loanStatus) VALUES ( ?, ?, ?, ?, ?)";
             st = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 //            st = con.prepareStatement(sql);
                
@@ -620,6 +747,7 @@ PreparedStatement st = null;
                 st.setString(2, bankName);
                 st.setLong(3, balance);
                 st.setInt(4,1);
+                st.setString(5, "NotApplied");
                 st.addBatch();
          
             batchResults = null;

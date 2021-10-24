@@ -7,6 +7,8 @@ public class AccountInfo {
     private String bankName;
     private long accountNumber;
     private long balance;
+    private String loanStatus;
+	
 
     public void setId(int id){
         this.id = id;
@@ -31,7 +33,13 @@ public class AccountInfo {
     }
     public long getBalance(){ return this.balance; }
 
-    @Override
+    public String getLoanStatus() {
+		return loanStatus;
+	}
+	public void setLoanStatus(String loanStatus) {
+		this.loanStatus = loanStatus;
+	}
+	@Override
     public String toString(){
         String output = this.balance+"  "+this.id;
         return output;

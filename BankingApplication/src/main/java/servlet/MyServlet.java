@@ -12,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.ws.Response;
 
 import org.apache.catalina.valves.rewrite.Substitution.StaticElement;
@@ -31,6 +32,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException; 
 
 public class MyServlet extends HttpServlet {
+	long depositCharges=1;
+    long withdrawCharges=1;
+    long transactionCharges=2;
+    String applied="A";
+    HashMap<Long, AccountInfo> map;
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException{
         //DbStore dbStore = new DbStore();
       LogicLayer logicLayer = new LogicLayer();
@@ -40,9 +46,31 @@ public class MyServlet extends HttpServlet {
 
     	PrintWriter out = response.getWriter();
     	
+    	
+    	//loan Submit client
+    	if(query.equals("loanSubmit")) {
+    		long accountNumber = (long) request.getSession().getAttribute("acc");
+    	AccountInfo accountInfo = 	map.get(accountNumber);
+    	if(accountInfo.getLoanStatus().equals("NotApplied")) {
+    		//System.out.print("loan status "+accountInfo.getLoanStatus());
+    		logicLayer.loanStatusUpdate(accountNumber,"Processing");
+    		map = logicLayer.clientCache(accountNumber);
+    		
+    			
+    		out.print("100 rps - Loan applied successfully");
+    	}
+    	else if(accountInfo.getLoanStatus().equals("Approved")) {
+    		out.print("You have already applied,You r eligible after you repay the loan");
+    	}
+    	
+    	else {
+    		out.print("You have already applied, It is under processing");
+    	}
+    	}
+    	
     	//add new customer  - DONE
     	
-    	if(query.equals("Submit")) {
+    	else if(query.equals("Submit")) {
     		
     		AccountInfo accountInfo = new AccountInfo();
     		int id = (int) request.getSession().getAttribute("message");
@@ -87,8 +115,10 @@ public class MyServlet extends HttpServlet {
 				e.printStackTrace();
 			}
     		
-//    		
+   		
     	}
+    	
+    	
     	
     	//transaction page - DONE
     	
@@ -105,20 +135,22 @@ public class MyServlet extends HttpServlet {
     		if(balance>=amount){
     			long bankCharge=1;	
     		balance = balance-amount;
-    		temp=balance-bankCharge;
+    		temp=balance-transactionCharges;
     		try {
     			logicLayer.updateBalance(temp, accountNumber);
-    			logicLayer.history(accountNumber, "Send to "+receiverAccountNumber, balance);
+    			logicLayer.bankAccount(transactionCharges);
+    			logicLayer.history(accountNumber, "Send to "+receiverAccountNumber, balance, transactionCharges);
+    			
     		}catch (Exception e) {
 				
     			e.printStackTrace();
 			}
     		balance = logicLayer.withDraw(receiverAccountNumber);
     		balance = balance+amount;
-    		temp=balance-bankCharge;
+    		temp=balance;
     		try {
     			logicLayer.updateBalance(temp, receiverAccountNumber);
-    			logicLayer.history(receiverAccountNumber, "Received from "+accountNumber, balance);
+    			logicLayer.history(receiverAccountNumber, "Received from "+accountNumber, balance, 0);
 			} catch (SQLException e) {
 				
 				e.printStackTrace();
@@ -261,7 +293,7 @@ public class MyServlet extends HttpServlet {
     	else if(query.equalsIgnoreCase("withDrawSubmit")) {
     		long acc_Number = (long) request.getSession().getAttribute("acc");
     		boolean a = logicLayer.checkAccountNumber(acc_Number);
-    		long bankCharge=1,updatedBalance=0;
+    		long updatedBalance=0;
     		if(a==false) {
     		long amountLong = Long.parseLong(request.getParameter("withDrawAmount"));
     		
@@ -269,17 +301,17 @@ public class MyServlet extends HttpServlet {
 
     		if(balance>=amountLong){
     		balance = balance-amountLong;
-    		updatedBalance = balance-bankCharge;
+    		updatedBalance = balance-withdrawCharges;
     		try {
     			logicLayer.updateBalance(updatedBalance, acc_Number);
-    			logicLayer.history(acc_Number,"With Draw",amountLong);
-    			//logicLayer.bankCharges(acc_Number,"With Draw",bankCharge);
+    			logicLayer.bankAccount(withdrawCharges);
+    			logicLayer.history(acc_Number,"With Draw",amountLong,withdrawCharges);
 			} catch (SQLException e) {
 				
 				e.printStackTrace();
 			}
 
-          	out.print("Successfully!!! and ur remaining balance is "+updatedBalance+" Bank charges: "+bankCharge+" Rupees");
+          	out.print("Successfully!!! and ur remaining balance is "+updatedBalance+" Bank charges: "+withdrawCharges+" Rupees");
     		}else {
     			
               	out.print(balance);
@@ -296,21 +328,23 @@ public class MyServlet extends HttpServlet {
     		long acc_Number = (long) request.getSession().getAttribute("acc");
     		System.out.print(acc_Number+ " acc nuber");
     		boolean a = logicLayer.checkAccountNumber(acc_Number);
-    		long bankCharge=1,updatedBalance=0;
+    		long updatedBalance=0;
     		if(a==false) {
     		long amountLong = Long.parseLong(request.getParameter("deposit"));
+    		
     		long balance = logicLayer.withDraw(acc_Number);
     		//logicLayer.bankCharges(acc_Number,"Deposit",bankCharge);
     		
     		balance = balance+amountLong;
-    		updatedBalance = balance-bankCharge;
+    		updatedBalance = balance-withdrawCharges;
     		try {
     			logicLayer.updateBalance(updatedBalance, acc_Number);
-    			logicLayer.history(acc_Number,"Deposit",amountLong);
+    			logicLayer.bankAccount(depositCharges);
+    			logicLayer.history(acc_Number,"Deposit",amountLong,withdrawCharges);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-          	out.print("Successfully!!! and ur new remaining balance is "+updatedBalance+" Bank charges: "+bankCharge+" Rupees");
+          	out.print("Successfully!!! and ur new remaining balance is "+updatedBalance+" Bank charges: "+withdrawCharges+" Rupees");
     		}else {
               	out.print("Account Number not found");
 			}
@@ -352,6 +386,7 @@ public class MyServlet extends HttpServlet {
     		if(n==1) {
     			request.getSession().setAttribute("message", id);
     			request.getSession().setAttribute("acc", accountNumber);
+    			map = logicLayer.clientCache(accountNumber);
     		RequestDispatcher rd = request.getRequestDispatcher("Login.jsp");
             rd.forward(request, response);
     		}
@@ -389,10 +424,11 @@ public class MyServlet extends HttpServlet {
     			logicLayer.changeAddress(newAddress, id);
     			
     			out.print("changed successfully!!");
-            
+    			
     			
     		
         }
+    	
     	
 
     	
@@ -487,7 +523,20 @@ public class MyServlet extends HttpServlet {
             		System.out.println(e);	
       		
             	}
-         
+            	//applied loans list - DONE
+            	
+                ArrayList<AccountInfo> appliedLoanList=null;
+                	try {
+                		
+                		appliedLoanList = logicLayer.getAppliedLoanList() ;
+                
+                	}
+                
+                catch (Exception e) {
+                	
+                		System.out.println(e);		
+
+                }
 
             
     	
@@ -634,8 +683,41 @@ public class MyServlet extends HttpServlet {
         	}
         	
         	
-
-
+  //client Loan - DONE
+            
+            
+        	else if(query.equalsIgnoreCase("clientLoan")) {
+        	RequestDispatcher rd = request.getRequestDispatcher("ClientLoan.jsp");
+        	rd.forward(request, response);
+        }
+        	
+//show applied loans
+        	else if(query.equalsIgnoreCase("appliedLoans")) {
+        		
+        		request.setAttribute("output", appliedLoanList);
+            	RequestDispatcher rd = request.getRequestDispatcher("ShowAppliedLoans.jsp");
+            	
+            	rd.forward(request, response);
+        	}
+     //approve loan   	
+        	else if(query.equals("loanApprove")) {
+        	long accountNumber = 	Long.parseLong(request.getParameter("accountNumber"));
+        	logicLayer.loanStatusUpdate(accountNumber,"Approved");
+        	appliedLoanList = logicLayer.getAppliedLoanList() ;
+        	
+        	long balance = logicLayer.withDraw(accountNumber);
+    		balance+=100;
+    			try {
+					logicLayer.updateBalance(balance, accountNumber);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        	request.setAttribute("output", appliedLoanList);
+        	RequestDispatcher rd = request.getRequestDispatcher("ShowAppliedLoans.jsp");
+        	
+        	rd.forward(request, response);
+        	}
    
     }
 }

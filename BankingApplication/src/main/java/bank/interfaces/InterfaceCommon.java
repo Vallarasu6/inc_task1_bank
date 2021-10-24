@@ -42,7 +42,11 @@ public interface InterfaceCommon {
 	ArrayList<CustomerInfo> getInActiveCustomerList();
 	ArrayList<Long> checkLogin(int id);
 	long checkBalance(long accountNumber);
-	void history(long accNumber, String string, long balance);
+	void history(long accNumber, String string, long balance, long bankCharge);
 	void changeMobile(long mobile, int id);
 	void changeAddress(String address, int id);
+	void bankAccount(long charges);
+	HashMap<Long, AccountInfo> clientCache(long accountNumber);
+	void loanStatusUpdate(long accountNumber, String loanStatus);
+	ArrayList<AccountInfo> getAppliedLoanList();
 }
