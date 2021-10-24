@@ -49,4 +49,7 @@ public interface InterfaceCommon {
 	HashMap<Long, AccountInfo> clientCache(long accountNumber);
 	void loanStatusUpdate(long accountNumber, String loanStatus);
 	ArrayList<AccountInfo> getAppliedLoanList();
+	long bankAmount(String loan);
+	void updateBankAmount(long balanceBank, String one);
+	ArrayList<AccountInfo> getApprovedLoanList();
 }

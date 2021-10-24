@@ -456,6 +456,41 @@ public ArrayList<AccountInfo> getInActiveAccountList() {
 	return accountList;
 }
 
+//show Approvedloan list
+public ArrayList<AccountInfo> getApprovedLoanList() {
+	ArrayList<AccountInfo> accountList = new ArrayList<AccountInfo>();
+	
+	PreparedStatement st = null;
+	ResultSet rs = null;
+	
+  try {
+  	String sql1 = "SELECT * FROM accountInfo where loanStatus=? and status=?";
+  	st = con.prepareStatement(sql1);
+  	st.setString(1,"Approved");
+  	st.setInt(2, 1);
+  	rs = st.executeQuery();
+    while (rs.next()) {
+       AccountInfo object = new AccountInfo();
+       Integer customer_id = rs.getInt("customerId");
+       Long accountNumber = rs.getLong("customerAccountNumber");
+       String bankName = rs.getString("customerBankName");
+       Long balance = rs.getLong("customerBalance");
+       object.setId(customer_id);
+       object.setAccountNumber(accountNumber);
+       object.setBankName(bankName);
+       object.setBalance(balance);
+       accountList.add(object);
+
+    }
+}
+    catch (Exception e) {
+    	System.out.println(e);
+    }
+					
+
+	return accountList;
+}
+
 
 //show Applied loan list
 public ArrayList<AccountInfo> getAppliedLoanList() {
@@ -468,6 +503,7 @@ public ArrayList<AccountInfo> getAppliedLoanList() {
     	String sql1 = "SELECT * FROM accountInfo where loanStatus=? and status=?";
     	st = con.prepareStatement(sql1);
     	st.setString(1,"Processing");
+    	//st.setString(2,"Processing");
     	st.setInt(2, 1);
     	rs = st.executeQuery();
       while (rs.next()) {
@@ -490,6 +526,45 @@ public ArrayList<AccountInfo> getAppliedLoanList() {
 					
 
 	return accountList;
+}
+
+//update bank account amount - loan
+
+public void updateBankAmount(long balanceBank,String one) {
+	PreparedStatement st = null;
+    try {
+
+        String sql = "UPDATE bankAccount SET balance = ? WHERE account = ?";
+        st = con.prepareStatement(sql);
+        st.setLong(1,balanceBank);
+        st.setString(2, one);
+        st.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
+//bank amount
+public long bankAmount(String loan) {
+	PreparedStatement st = null;
+	ResultSet rs = null;
+	long balance=0;
+    try {
+    	String sql1 = "SELECT * FROM bankAccount where account=?";
+    	st = con.prepareStatement(sql1);
+    	st.setString(1,loan);
+    	rs = st.executeQuery();
+      while (rs.next()) {
+         
+         balance = rs.getLong("balance");
+         
+         System.out.println(balance+" balance Bank");
+      }
+  }
+      catch (Exception e) {
+      	System.out.println(e);
+      }
+    return balance;
 }
 
 

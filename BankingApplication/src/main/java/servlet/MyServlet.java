@@ -37,11 +37,25 @@ public class MyServlet extends HttpServlet {
     long transactionCharges=2;
     String applied="A";
     HashMap<Long, AccountInfo> map;
+    
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException{
         //DbStore dbStore = new DbStore();
       LogicLayer logicLayer = new LogicLayer();
                  //get request from link   
-       
+    //applied loans list - DONE
+  	
+      ArrayList<AccountInfo> appliedLoanList=null;
+      	try {
+      		
+      		appliedLoanList = logicLayer.getAppliedLoanList() ;
+      
+      	}
+      
+      catch (Exception e) {
+      	
+      		System.out.println(e);		
+
+      }
     	String query = request.getParameter("page");
 
     	PrintWriter out = response.getWriter();
@@ -51,9 +65,10 @@ public class MyServlet extends HttpServlet {
     	if(query.equals("loanSubmit")) {
     		long accountNumber = (long) request.getSession().getAttribute("acc");
     	AccountInfo accountInfo = 	map.get(accountNumber);
-    	if(accountInfo.getLoanStatus().equals("NotApplied")) {
+    	if(accountInfo.getLoanStatus().equals("NotApplied") || accountInfo.getLoanStatus().equals("Paid")) {
     		//System.out.print("loan status "+accountInfo.getLoanStatus());
     		logicLayer.loanStatusUpdate(accountNumber,"Processing");
+    		//update after every process
     		map = logicLayer.clientCache(accountNumber);
     		
     			
@@ -424,12 +439,57 @@ public class MyServlet extends HttpServlet {
     			logicLayer.changeAddress(newAddress, id);
     			
     			out.print("changed successfully!!");
+    			}
+    	
+    	//load paid
+    	else if (query.equalsIgnoreCase("loanPaidSubmit")) {
+    		long accountNumber = (long) request.getSession().getAttribute("acc");
+    		AccountInfo accountInfo = map.get(accountNumber);
+    		if(accountInfo.getLoanStatus().equals("Approved")) {
     			
-    			
+    		long loanAmount=100;
+    		String one="loanAccount";
     		
-        }
+    		long balance = logicLayer.withDraw(accountNumber);
+
+    		if(balance>=loanAmount){
+    		balance = balance-loanAmount;
+    		//updatedBalance = balance-withdrawCharges;
+    		try {
+    			logicLayer.updateBalance(balance, accountNumber);
+    			
+    			logicLayer.history(accountNumber,"Loan Paid",loanAmount,0);
+			} catch (SQLException e) {
+				
+				e.printStackTrace();
+			}
+    		logicLayer.loanStatusUpdate(accountNumber,"Paid");
+        	//load arraylist again for new updated list
+        	appliedLoanList = logicLayer.getAppliedLoanList() ;
+        	long balanceBank = logicLayer.bankAmount(one);
+        	balanceBank = balanceBank+loanAmount;
+        	logicLayer.updateBankAmount(balanceBank,one);
+        	map = logicLayer.clientCache(accountNumber);
+          	out.print("Successfully!!!Loan paid");
+    		}else {
+    			
+              	out.print("Insufficient fund");
+			}
+    			
+    		}else {
+    			out.print("You can't pay the loan now");
+    		}
+		}
     	
-    	
+//    	
+//    	//mobile Recharge Submit
+//else if(query.equalsIgnoreCase("mobileRechargeSubmit")) {
+//            
+//    		long mobile =Long.parseLong(request.getParameter("Mobile"));
+//    		long amount =Long.parseLong(request.getParameter("Amount"));
+//    		
+//    			out.print("changed successfully!!");
+//    			}
 
     	
     	
@@ -523,20 +583,33 @@ public class MyServlet extends HttpServlet {
             		System.out.println(e);	
       		
             	}
-            	//applied loans list - DONE
             	
-                ArrayList<AccountInfo> appliedLoanList=null;
-                	try {
-                		
-                		appliedLoanList = logicLayer.getAppliedLoanList() ;
-                
-                	}
-                
-                catch (Exception e) {
+                	//approved loans list - DONE
                 	
-                		System.out.println(e);		
+                    ArrayList<AccountInfo> approvedLoanList=null;
+                    	try {
+                    		
+                    		approvedLoanList = logicLayer.getApprovedLoanList() ;
+                    
+                    	}
+                    
+                    catch (Exception e) {
+                    	
+                    		System.out.println(e);		
 
-                }
+                    }
+                    	 ArrayList<AccountInfo> appliedLoanList=null;
+                       	try {
+                       		
+                       		appliedLoanList = logicLayer.getAppliedLoanList() ;
+                       
+                       	}
+                       
+                       catch (Exception e) {
+                       	
+                       		System.out.println(e);		
+
+                       }
 
             
     	
@@ -691,6 +764,22 @@ public class MyServlet extends HttpServlet {
         	rd.forward(request, response);
         }
         	
+        	//show approved loans
+        	else if(query.equalsIgnoreCase("approvedLoans")) {
+        		
+        		request.setAttribute("output", approvedLoanList);
+            	RequestDispatcher rd = request.getRequestDispatcher("ShowApprovedLoans.jsp");
+            	
+            	rd.forward(request, response);
+        	}
+        	
+        	//loan paid page
+        	
+        	else if(query.equalsIgnoreCase("loanPaidSubmit")) {
+        		RequestDispatcher rd = request.getRequestDispatcher("PayLoan.jsp");
+            	rd.forward(request, response);
+        	}
+        	
 //show applied loans
         	else if(query.equalsIgnoreCase("appliedLoans")) {
         		
@@ -701,10 +790,15 @@ public class MyServlet extends HttpServlet {
         	}
      //approve loan   	
         	else if(query.equals("loanApprove")) {
-        	long accountNumber = 	Long.parseLong(request.getParameter("accountNumber"));
+        		String one="loanAccount";
+        		long loanAmount=100;
+        	long accountNumber = Long.parseLong(request.getParameter("accountNumber"));
         	logicLayer.loanStatusUpdate(accountNumber,"Approved");
+        	//load arraylist again for new updated list
         	appliedLoanList = logicLayer.getAppliedLoanList() ;
-        	
+        	long balanceBank = logicLayer.bankAmount(one);
+        	balanceBank = balanceBank-loanAmount;
+        	logicLayer.updateBankAmount(balanceBank,one);
         	long balance = logicLayer.withDraw(accountNumber);
     		balance+=100;
     			try {
@@ -713,11 +807,14 @@ public class MyServlet extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+    			logicLayer.history(accountNumber,"Loan debited",loanAmount,0);
         	request.setAttribute("output", appliedLoanList);
         	RequestDispatcher rd = request.getRequestDispatcher("ShowAppliedLoans.jsp");
         	
         	rd.forward(request, response);
         	}
+        	
+        	
    
     }
 }

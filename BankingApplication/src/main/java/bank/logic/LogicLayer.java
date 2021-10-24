@@ -136,6 +136,10 @@ public class LogicLayer {
    public ArrayList<AccountInfo> getAppliedLoanList() {
 	   return db.getAppliedLoanList();
    }
+ //show Approved loans list
+   public ArrayList<AccountInfo> getApprovedLoanList() {
+	   return db.getApprovedLoanList();
+   }
    
  //Delete both tables.
 
@@ -262,6 +266,17 @@ public ArrayList<History>  allHistory(long accountNumber) {
     //loan Status Update
     public void loanStatusUpdate(long accountNumber, String loanStatus) {
 		db.loanStatusUpdate(accountNumber,loanStatus);
+	}
+    
+    //bank amount
+    public long bankAmount(String loan) {
+	long balanceBank =  db.bankAmount(loan);
+	return balanceBank;
+	}
+    
+    //
+    public void updateBankAmount(long balanceBank,String one) {
+		db.updateBankAmount(balanceBank,one);
 	}
     
 //    //loanSubmit

@@ -57,7 +57,7 @@
 <script>
 function update(x){
 	/* $("#update").click(function(){ */
-		alert(x);
+		//alert(x);
 		/* var a = x; */
 		if(x=="mobile"){
 			window.location.href = "http://localhost:8080/BankingApplication/MobileUpdate.jsp";
@@ -91,6 +91,31 @@ $(document).ready(function(){
 <a href="http://localhost:8080/BankingApplication/MyServlett?page=deleteAccounts">Delete Account</a>
 <a href="http://localhost:8080/BankingApplication/MyServlett?page=deleteCustomer">Delete Customer</a>
 
- <a href="http://localhost:8080/BankingApplication/MyServlett?page=clientLoan">Loan</a>          
+ <a href="http://localhost:8080/BankingApplication/MyServlett?page=clientLoan">Loan</a>  
+ 
+ <select id="bills" name="Bills" onchange="bills(this.value)" style="border=none;">
+<option value="">Bills & recharge</option>
+<option value="payLoan"> Pay Loan</option>
+<option value="mobile">Mobile Recharge</option>
+<option value="dth">DTH</option>
+</select>        
+<script>
+function bills(x){
+	/* $("#update").click(function(){ */
+		alert(x);
+		/* var a = x; */
+		if(x=="payLoan"){
+			window.location.href = "http://localhost:8080/BankingApplication/PayLoan.jsp";
+			
+		}
+		else if(x=="mobile"){
+			window.location.href = "http://localhost:8080/BankingApplication/MobileRecharge.jsp";
+		}
+		else if(x=="dth"){
+			window.location.href = "http://localhost:8080/BankingApplication/DthRecharge.jsp";
+
+		}
+	}
+	</script>
  <a href="http://localhost:8080/BankingApplication/MyServlett?page=home">Logout</a>
 </div>
