@@ -250,6 +250,8 @@ public class MyServlet extends HttpServlet {
 				e.printStackTrace();
 			}
           	out.print("Succesfully!!");
+//          	RequestDispatcher rd = request.getRequestDispatcher("welcome.jsp");
+//            rd.forward(request, response);
     		}else {
               	out.print("Enter the correct Account Number! Account number not exists");
     		}
@@ -481,15 +483,35 @@ public class MyServlet extends HttpServlet {
     		}
 		}
     	
-//    	
-//    	//mobile Recharge Submit
-//else if(query.equalsIgnoreCase("mobileRechargeSubmit")) {
-//            
-//    		long mobile =Long.parseLong(request.getParameter("Mobile"));
-//    		long amount =Long.parseLong(request.getParameter("Amount"));
-//    		
-//    			out.print("changed successfully!!");
-//    			}
+    	
+    	//mobile Recharge Submit
+else if(query.equalsIgnoreCase("mobileRechargeSubmit")) {
+            long updatedBalance=0;
+    		long mobile =Long.parseLong(request.getParameter("Mobile"));
+    		long amount =Long.parseLong(request.getParameter("Amount"));
+    		long accountNumber = (long) request.getSession().getAttribute("acc");
+    		long balance = logicLayer.withDraw(accountNumber);
+
+    		if(balance>=amount){
+    		balance = balance-amount;
+    		updatedBalance = balance;
+    		try {
+    			logicLayer.updateBalance(updatedBalance, accountNumber);
+    			//logicLayer.bankAccount(withdrawCharges);
+    			logicLayer.history(accountNumber,"Mobile Recharge",amount,0);
+			} catch (SQLException e) {
+				
+				e.printStackTrace();
+			}
+
+          	out.print("Successfully!!! and ur remaining balance is "+updatedBalance);
+    		}else {
+    			
+              	out.print("Insufficient Fund");
+			}
+    		
+    			
+    			}
 
     	
     	
@@ -497,6 +519,7 @@ public class MyServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
     	     
     	String query = request.getParameter("page");
+    	PrintWriter out = response.getWriter();
     	LogicLayer logicLayer = new LogicLayer();
         //customer list active - done
           
@@ -788,19 +811,25 @@ public class MyServlet extends HttpServlet {
             	
             	rd.forward(request, response);
         	}
-     //approve loan   	
+        	
+     //approve loan  
+        	
         	else if(query.equals("loanApprove")) {
         		String one="loanAccount";
         		long loanAmount=100;
         	long accountNumber = Long.parseLong(request.getParameter("accountNumber"));
+        	
+        	long balanceBank = logicLayer.bankAmount(one);
+        	//if(balanceBank>=loanAmount) {
         	logicLayer.loanStatusUpdate(accountNumber,"Approved");
         	//load arraylist again for new updated list
         	appliedLoanList = logicLayer.getAppliedLoanList() ;
-        	long balanceBank = logicLayer.bankAmount(one);
+        	
         	balanceBank = balanceBank-loanAmount;
+        	System.out.print(balanceBank+" bank balance"+" one "+ one);
         	logicLayer.updateBankAmount(balanceBank,one);
         	long balance = logicLayer.withDraw(accountNumber);
-    		balance+=100;
+    		balance+=loanAmount;
     			try {
 					logicLayer.updateBalance(balance, accountNumber);
 				} catch (SQLException e) {
@@ -808,12 +837,21 @@ public class MyServlet extends HttpServlet {
 					e.printStackTrace();
 				}
     			logicLayer.history(accountNumber,"Loan debited",loanAmount,0);
+    			out.print("Loan Approved Successfully!! by admin");
         	request.setAttribute("output", appliedLoanList);
         	RequestDispatcher rd = request.getRequestDispatcher("ShowAppliedLoans.jsp");
         	
         	rd.forward(request, response);
+//        	}
+//        	else {
+//        		
+//        		request.setAttribute("output", appliedLoanList);
+//            	RequestDispatcher rd = request.getRequestDispatcher("ShowAppliedLoans.jsp");
+//            	rd.forward(request, response);
+//            	out.print("No sufficient fund in bank account - loan");
+//        		
+//        	}
         	}
-        	
         	
    
     }

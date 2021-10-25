@@ -29,7 +29,7 @@
                    <td>${row.accountNumber}</td>
                      <td>${row.balance}</td>
                      <td>Approved</td>
-                    <%--  <td><a href="http://localhost:8080/BankingApplication/MyServlett?page=loanApprove&accountNumber=${row.accountNumber}">Approve</a> --%>
+                    
             </td>
                 	
             </tr>

@@ -17,11 +17,6 @@
         </div>
         </div>
 
-
-
-
-
-
 </div>
 
 
@@ -31,8 +26,7 @@
 $(document).ready(function(){
 	
 	$("#loanSubmitbtn").click(function(){
-		//var id = $("#id").val();
-		
+
 		$.ajax({
 			type:'POST',
 			url:'MyServlett?page=loanSubmit',

@@ -13,7 +13,11 @@
     <%@ include file = "header.jsp" %>
     <%@ include file = "sidenav.jsp" %>
     <div style="margin-left:185px; margin-top:20px;">
-  <table  border = "1" width = "100%">
+    <div>
+   
+    <input type="text" name= "search" id= "search"  placeholder="search here" style=margin-left:40%;>
+    </div><br><br>
+  <table  border = "1" width = "100%" id="one">
          <tr>
             <th>Id</th>
             <th>Name</th>
@@ -33,19 +37,41 @@
          </c:forEach>
       </table>
       <br><br>
-     <!--  <table width = "100%">
-      <tr>
-            <th><button><a href="http://localhost:8080/BankingApplication/MyServlett?page=addcustomer">Add New Customer</a>
-            </button></th>
-            <th><button><a href="http://localhost:8080/BankingApplication/MyServlett?page=deleteCustomer">Delete Customer</a>
-            </button></th>
-            
-       </tr>
-         
-      </table> -->
+   
  
 </div>
 <%@ include file = "footer.jsp" %>
 
 </body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+<script>
+
+	
+$(document).ready(function(){
+	$('#search').keyup(function(){
+		search_table($(this).val());
+	});
+	function search_table(value){
+		$('#one tr').each(function(){
+			var found = 'false';
+			$(this).each(function(){
+				if($(this).text().toLowerCase().indexOf(value.toLowerCase())>=0){
+					found = 'true';
+				}
+			});
+			if(found == 'true'){
+				$(this).show();
+			}else{
+				$(this).hide();
+			}
+		});
+	}
+});
+
+
+
+
+
+</script>
 </html>

@@ -14,23 +14,34 @@
         <label for="name" class="col-sm-2 col-form-label">Enter Your new address</label>
         <div class="col-sm-10">
             <input type="text" name = "addressUpdate" class="form-control" id="address_update" placeholder="Enter new address" required>
+            <p id="addressCheck" style="color:red" ></p>
         </div>
     </div>
     
     
     <div class="form-group row">
         <div class="col-sm-6 text-center">
-            <button id="addressUpdateBtn" class="btn btn-primary" name="page" value="addressUpdateSubmit">Submit</button>
+            <button id="addressUpdateBtn" class="btn btn-primary" onclick="validate()" name="page" value="addressUpdateSubmit">Submit</button>
         </div>
         </div>
 </div>
  <%@ include file = "footer.jsp" %>
   <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 <script>
-       $(document).ready(function(){
-	
-	$("#addressUpdateBtn").click(function(){
-		//var accountNumber = $("#accountNumber").val();
+function validate(){
+	var e = document.getElementById("address_update").value;
+	if(e==''){
+		
+		document.getElementById("addressCheck").innerHTML="Please enter your address";
+		 document.getElementById("addressCheck").style.display='block';
+	}
+	 else{
+		document.getElementById("addressCheck").style.display='none';
+	}  
+	if(document.getElementById("addressCheck").style.display=='none' )
+		save();
+		} 
+function save(){
 		var addressNew = $("#address_update").val();
 		
 		$.ajax({
@@ -40,8 +51,7 @@
 				alert(result);
 			} 
 		});
-	});
-});
+}
        </script>
 </body>
 </html>

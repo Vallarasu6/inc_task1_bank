@@ -101,9 +101,7 @@ $(document).ready(function(){
 </select>        
 <script>
 function bills(x){
-	/* $("#update").click(function(){ */
 		alert(x);
-		/* var a = x; */
 		if(x=="payLoan"){
 			window.location.href = "http://localhost:8080/BankingApplication/PayLoan.jsp";
 			

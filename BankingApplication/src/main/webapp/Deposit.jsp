@@ -16,7 +16,7 @@
     <div class="form-group row">
         <label for="name" class="col-sm-2 col-form-label">Enter amount to deposit</label>
         <div class="col-sm-10">
-            <input type="text" name = "deposit" class="form-control" id="deposit" placeholder="Enter customerId" required>
+            <input type="text" name = "deposit" class="form-control" id="deposit" placeholder="Enter the amount" required>
         </div>
     </div>
     
@@ -35,7 +35,6 @@
        $(document).ready(function(){
 	
 	$("#depositbtn").click(function(){
-		//var accountNumber = $("#accountNumber").val();
 		var deposit = $("#deposit").val();
 		
 		$.ajax({

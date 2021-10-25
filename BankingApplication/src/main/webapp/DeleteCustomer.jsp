@@ -8,7 +8,6 @@
 </head>
 <body>
 
-<!-- <form action="MyServlett" method="POST"> -->
 <%@ include file = "header.jsp" %>
   <%@ include file = "LoginSideNav.jsp" %>
 <div style="margin-left:165px;">
@@ -20,19 +19,21 @@
         </div>
         </div>
         <%@ include file = "footer.jsp" %>
-       <!--</form>-->
        <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 <script>
 $(document).ready(function(){
 	
 	$("#deleteCustomerBtn").click(function(){
-		//var id = $("#id").val();
-		
+	
 		$.ajax({
 			type:'POST',
 			url:'MyServlett?page=DeleteCustomerSubmit',
 			success: function(result){
-				alert(result);
+				if(result=="Succesfully!!"){
+					alert(result);
+					window.location.href = "http://localhost:8080/BankingApplication/welcome.jsp";
+				}
+				
 			} 
 		});
 	});

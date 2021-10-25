@@ -32,16 +32,7 @@
          </c:forEach>
       </table>
       <br><br>
-       <!-- <table width = "100%">
-      <tr>
-            <th><button><a href="http://localhost:8080/BankingApplication/MyServlett?page=addaccount">Add New Account</a>
-            </button></th>
-             <th><button><a href="http://localhost:8080/BankingApplication/MyServlett?page=deleteAccounts">Delete Account</a>
-            </button></th>
-            
-         </tr>
-         
-      </table> -->
+       
  
 </div>
 <%@ include file = "footer.jsp" %>

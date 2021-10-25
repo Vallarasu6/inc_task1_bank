@@ -11,16 +11,21 @@
   <%@ include file = "LoginSideNav.jsp" %>
   <div style="margin-left:175px;">
 <div class="form-group row">
-        <label for="name" class="col-sm-2 col-form-label">Enter Your new address</label>
+        <label for="name" class="col-sm-2 col-form-label">Enter your Subscribe number</label>
         <div class="col-sm-10">
-            <input type="text" name = "addressUpdate" class="form-control" id="address_update" placeholder="Enter new address" required>
+            <input type="text" name = "Mobile" class="form-control" id="mobile" placeholder="Enter Subscribe Number" required>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="name" class="col-sm-2 col-form-label">Enter amount to recharge</label>
+        <div class="col-sm-10">
+            <input type="text" name = "Amount" class="form-control" id="amount" placeholder="Enter amount" required>
         </div>
     </div>
     
-    
     <div class="form-group row">
         <div class="col-sm-6 text-center">
-            <button id="addressUpdateBtn" class="btn btn-primary" name="page" value="addressUpdateSubmit">Submit</button>
+            <button id="mobileRechargeBtn" class="btn btn-primary" name="page" value="mobileRechargeSubmit">Submit</button>
         </div>
         </div>
 </div>
@@ -29,13 +34,13 @@
 <script>
        $(document).ready(function(){
 	
-	$("#addressUpdateBtn").click(function(){
-		//var accountNumber = $("#accountNumber").val();
-		var addressNew = $("#address_update").val();
+	$("#mobileRechargeBtn").click(function(){
+		var mobile= $("#mobile").val();
+		var amount= $("#amount").val();
 		
 		$.ajax({
 			type:'POST',
-			url:'MyServlett?addressUpdate='+addressNew+'&page=addressUpdateSubmit',
+			url:'MyServlett?Mobile='+mobile+'&Amount='+amount+'&page=mobileRechargeSubmit',
 			success: function(result){
 				alert(result);
 			} 

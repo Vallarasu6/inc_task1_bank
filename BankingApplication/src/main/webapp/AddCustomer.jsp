@@ -36,18 +36,12 @@
     <div class="form-group row">
         <label for="name" class="col-sm-2 col-form-label">Bank Name</label>
         <div class="col-sm-10">
-            <input type="text" name = "bankname" class="form-control" id="bankName" placeholder="Enter your bank name(branch)" >
+            <input type="text" name = "bankname" class="form-control" id="bankName" placeholder="Enter your bank name" >
             <p id="bankCheck" style="color:red" ></p>
             
         </div>
     </div>
- <!--   <div class="form-group row">
-        <label for="accountNumber" class="col-sm-2 col-form-label">Account Number</label>
-        <div class="col-sm-10">
-            <input type="text" name="accountNumber" class="form-control" id="myAccountNumber" placeholder="Enter your Phone number" required>
-            <span class= "red-text accent-4" id="result"></span> 
-        </div>
-    </div> -->
+ 
      <div class="form-group row">
         <label for="balance" class="col-sm-2 col-form-label">Balance</label>
         <div class="col-sm-10">
@@ -87,29 +81,7 @@
 </div>
 <%@ include file = "footer.jsp" %>
 <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
-<script>
 
-/* $(document).ready(function(){
-	
-	 $("#btn1").click(function(){  
-		
-	/* 	var name = $("#name").val();
-		var mobile = $("#mobile").val();
-		var bankName = $("#bankName").val();
-		//var myAccountNumber = $("#myAccountNumber").val();
-		var address = $("#address").val();
-		var balance = $("#balance").val();
-		$.ajax({
-			type:'POST',
-			url:'MyServlett?Name='+name+'&mobile='+mobile+'&bankname='+bankName+'&balance='+balance+'&Address='+address+'&page=submit',
-			success: function(result){
-				alert(result);
-			} 
-	 	}); */
-	 	});  
-});
-} */
-</script>
 <script>
 
 function validate(){
@@ -167,7 +139,6 @@ save();
 		var name = $("#name").val();
 		var mobile = $("#mobile").val();
 		var bankName = $("#bankName").val();
-		//var myAccountNumber = $("#myAccountNumber").val();
 		var address = $("#address").val();
 		var balance = $("#balance").val();
 		$.ajax({
@@ -184,29 +155,6 @@ save();
 
 
 
-<!-- <script type="text/javascript">
-
-function validate(){
-	
-	var name = document.getElementById("name");
-	var mobile = document.getElementById("mobile");
-	var bankName = document.getElementById("bankName");
-	var accountNumber = document.getElementById("myAccountNumber");
-	var balance = document.getElementById("balance");
-
-	if(name.value == "" || name.value == null){
-		
-	name.style.border = "solid 2px red";
-	document.getElementById("labelname").style.visibility="visible";
-	
-	}
-	
-	else{
-/* 		alert("Validate outside null");
- *//*  return true; */
-	}
-}
-</script> -->
 
 </body>
 
