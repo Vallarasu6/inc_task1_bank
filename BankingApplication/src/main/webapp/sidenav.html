@@ -1,0 +1,171 @@
+  <!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Customer-Details</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+   
+  
+     <!-- jQuery library file -->
+     <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+ 
+  
+  <style type="text/css">
+    .sidenav {
+  height: 80%;
+  width: 169px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 1	;
+  background-color:#ffe6b3;
+  overflow-x: hidden;
+  padding-top: 20px;
+  margin-top:120px;
+}
+
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 18px;
+  color: black;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: black;
+  background-color: white;
+  
+}
+.active{ background-color: red;}
+.main {
+  margin-left: 160px; 
+  font-size: 20px; 
+  padding: 0px 10px;
+}
+
+    </style>
+     </head>
+<body>
+<div class="sidenav">
+<!-- <a href="http://localhost:8080/BankingApplication/MyServlett?page=home">Home</a>
+ -->
+ <button id="homeBtn">Home</button><br>
+<button id="customerBtn">Customer</button><br>
+<button id="accountBtn">Account</button><br>
+<button id="inActiveCustomerBtn">InActive Customer</button><br>
+<button id="inActiveAccountBtn">InActive Account</button><br>
+<button id="allHistoriesBtn">All histories</button><br>
+<button id="appliedLoansBtn">Applied loans</button><br>
+<button id="approvedLoansBtn">Approved loans</button><br>
+
+<!-- <a href="http://localhost:8080/BankingApplication/MyServlett?page=account">Account</a>
+ -->
+<!-- <a href="http://localhost:8080/BankingApplication/MyServlett?page=inActiveCustomer">InActive Customer</a>
+ -->
+<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=inActiveAccount">InActive Account</a>
+ -->
+<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=history">All Histories</a>
+ -->
+<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=appliedLoans">Applied loans</a>
+ -->
+<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=approvedLoans">Approved loans</a>
+ -->
+ <a href="http://localhost:8080/BankingApplication/MyServlett?page=waitingLoansList">Waiting List</a>
+<a href="http://localhost:8080/BankingApplication/MyServlett?page=blockLoansList">Block List</a>
+
+
+
+<!-- <a href="http://localhost:8080/BankingApplication/MyServlett?page=transaction">Transaction</a>
+ -->
+<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=transactionHistory">Transaction History</a>
+ --><!-- <a href="http://localhost:8080/BankingApplication/MyServlett?page=allHistory">All history</a> -->
+</div>
+<div class="adminProcess" id="home"></div>
+<div class="adminProcess" id="customer"></div>
+<div class="adminProcess" id="account"></div>
+<div class="adminProcess" id="inActiveCustomer"></div>
+<div class="adminProcess" id="inActiveAccount"></div>
+<div class="adminProcess" id="allHistories"></div>
+<div class="adminProcess" id="appliedLoans"></div>
+<div class="adminProcess" id="approvedLoans"></div>
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    
+<script>
+
+ $(document).ready(function(){
+    	
+	 $("#homeBtn").click(function(){
+		 $(".sidenav").hide();
+		 $(".adminProcess").hide();
+			
+			 
+			 $("#home").load("welcome.html");
+			 $("#home").show();
+			 
+		}); 
+	 
+	 
+	 
+	 $("#customerBtn").click(function(){
+		 $(".adminProcess").hide();
+			
+		 $("#customer").load("customer.html");
+		 $("#customer").show();
+	 });
+			
+			
+	$("#accountBtn").click(function(){
+		$(".adminProcess").hide();
+		 $("#account").load("account.html");
+		 $("#account").show();
+		
+	}); 
+	
+	
+	$("#inActiveCustomerBtn").click(function(){
+		$(".adminProcess").hide();
+		 $("#inActiveCustomer").load("ViewDeleteCustomer.html");
+		 
+		 $("#inActiveCustomer").show();
+		
+	}); 
+	$("#inActiveAccountBtn").click(function(){
+		$(".adminProcess").hide();
+		 $("#inActiveAccount").load("ViewDeleteAccounts.html");
+		 
+		 $("#inActiveAccount").show();
+		
+	}); 
+	
+$("#allHistoriesBtn").click(function(){
+	$(".adminProcess").hide();
+		 
+		 $("#allHistories").load("History.html");
+		 
+		 $("#allHistories").show();
+	}); 
+	
+$("#appliedLoansBtn").click(function(){
+	$(".adminProcess").hide();
+	 
+	 $("#appliedLoans").load("ShowAppliedLoans.html");
+	 
+	 $("#appliedLoans").show();
+}); 
+
+
+$("#approvedLoansBtn").click(function(){
+	$(".adminProcess").hide();
+	 
+	 $("#approvedLoans").load("ShowApprovedLoans.html");
+	 
+	 $("#approvedLoans").show();
+}); 
+	
+	
+	});
+
+</script>
+</body>
+</html>

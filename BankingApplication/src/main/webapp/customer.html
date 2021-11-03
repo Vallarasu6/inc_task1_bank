@@ -1,0 +1,82 @@
+<div style="margin-left:175px;">
+<h1>Customer page</h1>
+
+    <input type="text" name= "search" id= "search"  placeholder="search here" style=margin-left:40%;>
+    
+<div id="customerInfo"></div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+ 
+ 
+ <script>
+
+ //$('#sideNav').load("sidenav.html");
+ $(document).ready(function(){
+	 
+	 
+	 
+	 
+	 
+	$('#search').keyup(function(){
+		search_table($(this).val());
+	});
+	function search_table(value){
+		$('#one tr').each(function(){
+			var found = 'false';
+			$(this).each(function(){
+				if($(this).text().toLowerCase().indexOf(value.toLowerCase())>=0){
+					found = 'true';
+				}
+			});
+			if(found == 'true'){
+				$(this).show();
+			}else{
+				$(this).hide();
+			}
+		});
+	} 
+	
+
+		
+		$.ajax({
+			type:'GET',
+			url:'MyServlett?page=customer',
+			success: function(result){
+				result=JSON.parse(result);
+				var tbltop = "<table border='1' id='one' width=100%><tr><th>Id</th><th>Name</th><th>Mobile</th></tr>";
+
+				var main ="";
+	            for (i = 0; i < result.length; i++){
+	              main += "<tr><td>"+result[i].id+"</td><td>"+result[i].name+"</td><td>"+result[i].mobileNumber+"</td></tr>";
+	            }
+	            var end = "</table>"
+	            var tbl = tbltop+ main + end;
+	           
+	            $("#customerInfo").html(tbl);
+			}
+		});
+	});
+	
+
+
+     
+
+ 
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+

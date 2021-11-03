@@ -1,0 +1,314 @@
+  <style type="text/css">
+    .sidenav {
+  height: 80%;
+  width: 169px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 1	;
+  background-color:#ffe6b3;
+  overflow-x: hidden;
+  padding-top: 20px;
+  margin-top:120px;
+}
+
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 18px;
+  color: black;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: black;
+  background-color: white;
+  
+}
+.active{ background-color: red;}
+.main {
+  margin-left: 160px; 
+  font-size: 20px; 
+  padding: 0px 10px;
+}
+
+    </style>
+    <div id="balance" style="color:green;  margin-left: 800px; "></div>
+    
+<div class="sidenav">
+
+<div id="accNumId" style="color:green"></div>
+<div id="accountDropDown"></div>
+
+
+<div id="sideNavigation">
+<button id="addaccountBtn">Add New Account</button><br>
+<button id="withDrawBtn">With Draw</button><br>
+<button id="depositBtn">Deposit</button><br>
+<button id="transactionBtn">Transaction</button><br>
+<button id="allHistoryBtn">All History</button><br>
+
+
+<!-- <a href="http://localhost:8080/BankingApplication/MyServlett?page=addaccount">Add New Account</a>
+ -->
+ 
+<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=withDraw">With Draw</a>
+ -->
+<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=deposit">Deposit</a>
+ -->
+<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=transaction">Transaction</a>
+ -->
+<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=allHistory">All history</a>
+ -->
+ <a href="#"id="balancebtn">Check Account Balance</a>
+<select id="update" name="updates" onchange="update(this.value)" style="border:none;">
+<option value="">Update Profile</option>
+<option value="mobile">Mobile Num</option>
+
+<option value="address" align="center">Address</option>
+
+
+</select>
+<button id="clientLoanBtn">Loan</button><br>
+
+ <a href="http://localhost:8080/BankingApplication/MyServlett?page=deleteAccounts">Delete Account</a>
+ 
+ <a href="http://localhost:8080/BankingApplication/MyServlett?page=deleteCustomer">Delete Customer</a>
+
+<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=clientLoan">Loan</a>  
+ --> 
+ <select id="bills" name="Bills" onchange="bills(this.value)" style="border:none;">
+<option value="">Bills and recharge</option>
+
+<option value="mobile">Mobile Recharge</option>
+<option value="dth">DTH</option>
+</select>        
+
+ <a href="http://localhost:8080/BankingApplication/MyServlett?page=logout" id="logout" >Logout</a>
+</div>
+</div>
+
+<div class="allProcess" id="addAccount"></div>
+<div class="allProcess" id="withDraw"></div>
+<div class="allProcess" id="deposit"></div>
+<div class="allProcess" id="transaction"></div>
+<div class="allProcess" id="allHistory"></div>
+<div class="allProcess" id="mobileUpdate"></div>
+<div class="allProcess" id="addressUpdate"></div>
+<div class="allProcess" id="clientLoan"></div>
+<div class="allProcess" id="mobileRecharge"></div>
+<div class="allProcess" id="dthRecharge"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+<script>
+function accountNumbers(x){
+	if(x!=''){
+		
+		var y = x;
+		
+		$.ajax({
+			type:'POST',
+			url:'MyServlett?y='+x+'&page=setSessionAccountNumber',
+			success: function(result){
+				alert("inside acc num set check 113");
+				$("#accNumId").html('Current Acc Num '+ result);
+			} 
+		});
+		
+		$.ajax({
+			type:'POST',
+			url:'MyServlett?page=accountBalance',
+			success: function(result){
+				alert("inside balance check 120");
+				$("#balance").html(result);
+				$("#balance").show();
+				
+				
+			} 
+		
+	}); 
+		
+	}
+}
+
+function update(x){
+	
+	if(x=="mobile"){
+		
+		 $(".allProcess").hide();
+		 $("#mobileUpdate").load("MobileUpdate.html");
+		 $("#mobileUpdate").show();
+		
+		
+	}
+	else if(x=="address"){
+		$(".allProcess").hide();
+		 $("#addressUpdate").load("AddressUpdate.html");
+		 $("#addressUpdate").show();
+	}
+	
+
+}
+
+function bills(x){
+	
+	
+	if(x=="mobile"){
+		$(".allProcess").hide();
+		 $("#mobileRecharge").load("MobileRecharge.html");
+		 $("#mobileRecharge").show();
+		
+	}
+	else if(x=="dth"){
+		$(".allProcess").hide();
+		 $("#dthRecharge").load("DthRecharge.html");
+		 $("#dthRecharge").show();
+
+	}
+}
+
+
+
+
+$(document).ready(function(){
+	
+	$.ajax({
+		type:'POST',
+		url:'MyServlett?page=setAccountNumber',
+		success: function(result){
+			
+			result=JSON.parse(result);
+			 var tbltop = "<select id='account' name='accounts' onchange='accountNumbers(this.value)' style='border:none;'>";
+
+			var main ="<option>Select Acc Num</option>";
+            for (i = 0; i < result.length; i++){
+            	main+="<option value="+result[i]+">"+result[i]+"</option>"; 
+            }
+            var end = "</select>"
+            var tbl = tbltop+ main + end;
+           
+            $("#accountDropDown").html(tbl);
+		} 
+	});
+	
+	
+	
+	
+	/*  $("#balancebtn").click(function(){ 
+		
+		
+		$.ajax({
+			type:'POST',
+			url:'MyServlett?page=accountBalance',
+			success: function(result){
+				$("#balance").html(result);
+				$("#balance").show();
+				$(".allProcess").hide();
+				
+			} 
+		 }); 
+	});  
+	*/
+	
+	 $("#addaccountBtn").click(function(){
+		 $(".allProcess").hide();
+		 $("#addAccount").load("AddAccount.html");
+		 $("#addAccount").show();
+		 $.ajax({
+				type:'POST',
+				url:'MyServlett?page=setAccountNumber',
+				success: function(result){
+					
+					result=JSON.parse(result);
+					 var tbltop = "<select id='account' name='accounts' onchange='accountNumbers(this.value)' style='border:none;'>";
+
+					var main ="<option>Select Acc Num</option>";
+		            for (i = 0; i < result.length; i++){
+		            	main+="<option value="+result[i]+">"+result[i]+"</option>"; 
+		            }
+		            var end = "</select>"
+		            var tbl = tbltop+ main + end;
+		           
+		            $("#accountDropDown").html(tbl);
+				} 
+			});
+		 
+	 });
+	
+	 $("#withDrawBtn").click(function(){
+		 $(".allProcess").hide();
+		 $("#withDraw").load("WithDraw.html");
+		 $("#withDraw").show();
+		
+		 
+	 });
+	 
+	 $("#depositBtn").click(function(){
+		 $(".allProcess").hide();
+		 $("#deposit").load("Deposit.html");
+		 $("#deposit").show();
+		 
+		 
+	 });
+	
+	 $("#transactionBtn").click(function(){
+		 $(".allProcess").hide();
+		 $("#transaction").load("transaction.html");
+		 $("#transaction").show();
+		
+		 
+	 });
+	 
+	 $("#allHistoryBtn").click(function(){
+		 $(".allProcess").hide();
+		 $("#allHistory").load("AllHistory.html");
+		 $("#allHistory").show();
+		
+		 
+	 });
+	 
+	 $("#clientLoanBtn").click(function(){
+		 $(".allProcess").hide();
+		 $("#clientLoan").load("ClientLoan.html");
+		 $("#clientLoan").show();
+		
+		 
+	 });
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+

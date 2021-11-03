@@ -1,4 +1,7 @@
 package bank.pojo;
+
+import java.util.*;
+
 public class CustomerInfo {
 
 
@@ -6,10 +9,23 @@ public class CustomerInfo {
     private String name;
     private long mobileNumber;
     private String address;
-		
+    private String password;
+	private List<Long> list;
 	
 
-    public String getAddress() {
+    public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public List<Long> getList() {
+		return list;
+	}
+	public void setList(List<Long> list) {
+		this.list = list;
+	}
+	public String getAddress() {
 		return address;
 	}
 	public void setAddress(String address) {
@@ -34,8 +50,10 @@ public class CustomerInfo {
 	@Override
 	public String toString() {
 		return "CustomerInfo [id=" + id + ", name=" + name + ", mobileNumber=" + mobileNumber + ", address=" + address
-				+ "]";
+				+ ", password=" + password + ", list=" + list + "]";
 	}
+	
+    
 
     
 }

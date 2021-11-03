@@ -7,6 +7,7 @@ import pojo_account.AccountInfo;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import TransactionHistory.TransactionHistoryPojo;
 import allHistoryPojo.AllHistory;
@@ -40,9 +41,9 @@ public interface InterfaceCommon {
 	//ArrayList<TransactionHistoryPojo> showTransactionHistory();
 	ArrayList<History> allHistory(long accountNumber);
 	ArrayList<CustomerInfo> getInActiveCustomerList();
-	ArrayList<Long> checkLogin(int id);
+	String checkLogin(int id, String password);
 	long checkBalance(long accountNumber);
-	void history(long accNumber, String string, long balance, long bankCharge);
+	void history(long accNumber, String string, long balance, long bankCharge,long updatedBalance);
 	void changeMobile(long mobile, int id);
 	void changeAddress(String address, int id);
 	void bankAccount(long charges);
@@ -52,4 +53,7 @@ public interface InterfaceCommon {
 	long bankAmount(String loan);
 	void updateBankAmount(long balanceBank, String one);
 	ArrayList<AccountInfo> getApprovedLoanList();
+	HashMap<Integer, CustomerInfo> getAccountNumbersList(int id);
+	ArrayList<AccountInfo> getWaitingLoanList();
+	ArrayList<AccountInfo> getBlockLoanList();
 }

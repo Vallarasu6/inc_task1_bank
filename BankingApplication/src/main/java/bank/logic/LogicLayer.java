@@ -3,18 +3,15 @@ import bank.database.DbStore;
 import bank.exception.HandledException;
 import bank.interfaces.InterfaceCommon;
 import bank.pojo.CustomerInfo;
+import cache.CacheStore;
 import hashMap.HashMapHandler;
 import historyPojo.History;
 import pojo_account.AccountInfo;
+
+import java.util.*;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-
-import java.util.Properties;
 
 import javax.swing.plaf.synth.SynthFormattedTextFieldUI;
 
@@ -72,22 +69,17 @@ public class LogicLayer {
 	    
 	    
 //check login
-	    public int checkLogin(int id,long accountNumber) {
-	    	ArrayList<Long> acc_Number = db.checkLogin(id);
-
-	    	int j=0;
-	    	for(int i=0;i<acc_Number.size();i++) {
-	    		if(acc_Number.get(i)==accountNumber) {
-	    			j=1;
-	    			break;
+	    public int checkLogin(int id,String password) {
+	    	String name = db.checkLogin(id,password);
+	    	//System.out.print(name+" name "+userName+" ");
+	    		if(name.equals("yes")) {
+	    			return 1;
 	    		}
+	    		else {
+	    			return 0;
 	    	
 	    	}
-	    	if(j==1) {
-	    		return 1;
-	    	}else {
-	    		return 0;
-	    	}
+	    	
 			
 		}
 	//show history
@@ -139,6 +131,14 @@ public class LogicLayer {
  //show Approved loans list
    public ArrayList<AccountInfo> getApprovedLoanList() {
 	   return db.getApprovedLoanList();
+   }
+ //show waiting loans list
+   public ArrayList<AccountInfo> getWaitingLoanList() {
+	   return db.getWaitingLoanList();
+   }
+   //show block loans list
+   public ArrayList<AccountInfo> getBlockLoanList() {
+	   return db.getBlockLoanList();
    }
    
  //Delete both tables.
@@ -235,20 +235,23 @@ public ArrayList<History>  allHistory(long accountNumber) {
             //accountInfo.setBalance(bal);
        accNumber = db.insertToAccountTable(accountInfo);
        //long balance = accountInfo.getBalance();
-       
+//       List<Long> list = new ArrayList<>();
+//       list.add(accNumber);
+//       customerInfo.setList(list);
+       //CacheStore.INSTANCE.customerMapStore(key,customerInfo);
        //System.out.println(accNumber+" accountNumber"+accountInfo.getBalance()+" balance");
-        	history(accNumber,"Deposit",bal,0);
+        	history(accNumber,"Deposit",bal,0,bal);
         	
       
         }
             catch (SQLException e) {
             e.printStackTrace();
         }
-        return accNumber;
+        return key;
     }
     //history
-    public void history(long accountNumber,String process, long balance, long bankCharges) {
-    	db.history(accountNumber,process,balance,bankCharges);
+    public void history(long accountNumber,String process, long balance, long bankCharges, long updatedBalance) {
+    	db.history(accountNumber,process,balance,bankCharges,updatedBalance);
 		
 	}
     //bank account
@@ -263,6 +266,18 @@ public ArrayList<History>  allHistory(long accountNumber) {
     	return map;
     	
 	}
+    
+    //getAccountNumbersList
+    public HashMap<Integer,CustomerInfo> getAccountNumbersList(int id) {
+    	HashMap<Integer,CustomerInfo> map = db.getAccountNumbersList(id);
+    	//System.out.println(map+" Map2");
+//    	CacheStore.INSTANCE.customerMap = map;
+//    	HashMap<Integer,CustomerInfo> map2 = CacheStore.INSTANCE.returnCustomerMapStore();
+    	//System.out.println(map2+" Map3");
+    	return map;
+    	
+	}
+    
     //loan Status Update
     public void loanStatusUpdate(long accountNumber, String loanStatus) {
 		db.loanStatusUpdate(accountNumber,loanStatus);
@@ -294,10 +309,16 @@ public ArrayList<History>  allHistory(long accountNumber) {
 		 try {
 			 long bal = accountInfo.getBalance();
 	            //accountInfo.setBalance(bal);
+			 int id = accountInfo.getId();
 	           key =  db.insertToAccountTable(accountInfo);
 	           System.out.println(key+" auto gen key");
-	           history(key, "Deposit", bal,0);
-
+	           history(key, "Deposit", bal,0,bal);
+//	           HashMap<Integer, List<Long>> customerMap =  CacheStore.INSTANCE.returnCustomerMapStore();
+//	           List<Long> list= customerMap.get(id);
+//	           //List<Long> list =   customerInfo.getList();
+//	           list.add(key);
+	           
+	           
 	        }
 	        catch (SQLException e){
 	            e.printStackTrace();

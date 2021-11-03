@@ -7,7 +7,16 @@ public class History {
 	private long amount;
 	private String date;
 	private long bankCharges;
+	private long updatedBalance;
 	
+	
+	
+	public long getUpdatedBalance() {
+		return updatedBalance;
+	}
+	public void setUpdatedBalance(long updatedBalance) {
+		this.updatedBalance = updatedBalance;
+	}
 	
 	public int getId() {
 		return id;
@@ -49,8 +58,9 @@ public class History {
 	@Override
 	public String toString() {
 		return "History [id=" + id + ", accountNumber=" + accountNumber + ", process=" + process + ", amount=" + amount
-				+ ", date=" + date + ", bankCharges=" + bankCharges + "]";
+				+ ", date=" + date + ", bankCharges=" + bankCharges + ", updatedBalance=" + updatedBalance + "]";
 	}
+	
 	
 	
 	

@@ -7,6 +7,7 @@ import historyPojo.History;
 
 import java.io.*;
 
+import javax.security.auth.message.callback.PrivateKeyCallback.Request;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,12 +21,15 @@ import org.apache.jasper.tagplugins.jstl.core.If;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.mysql.cj.Session;
+
 import TransactionHistory.TransactionHistoryPojo;
 import allHistoryPojo.AllHistory;
 import bank.database.DbStore;
 import bank.exception.HandledException;
 import bank.logic.LogicLayer;
 import bank.pojo.CustomerInfo;
+import cache.CacheStore;
 
 import java.io.PrintWriter;
 import java.sql.PreparedStatement;
@@ -35,17 +39,19 @@ public class MyServlet extends HttpServlet {
 	long depositCharges=1;
     long withdrawCharges=1;
     long transactionCharges=2;
-    String applied="A";
+   // String applied="A";
     HashMap<Long, AccountInfo> map;
-    
+    ArrayList<Long> list;
+ 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException{
-        //DbStore dbStore = new DbStore();
-      LogicLayer logicLayer = new LogicLayer();
-                 //get request from link   
-    //applied loans list - DONE
+
+    	LogicLayer logicLayer = new LogicLayer();
+
+    	//applied loans list - DONE
   	
       ArrayList<AccountInfo> appliedLoanList=null;
-      	try {
+      	
+      try {
       		
       		appliedLoanList = logicLayer.getAppliedLoanList() ;
       
@@ -63,12 +69,12 @@ public class MyServlet extends HttpServlet {
     	
     	//loan Submit client
     	if(query.equals("loanSubmit")) {
+    		
     		long accountNumber = (long) request.getSession().getAttribute("acc");
-    	AccountInfo accountInfo = 	map.get(accountNumber);
-    	if(accountInfo.getLoanStatus().equals("NotApplied") || accountInfo.getLoanStatus().equals("Paid")) {
-    		//System.out.print("loan status "+accountInfo.getLoanStatus());
+    		map = logicLayer.clientCache(accountNumber);
+    		AccountInfo accountInfo = 	map.get(accountNumber);
+    		if(accountInfo.getLoanStatus().equals("NotApplied") || accountInfo.getLoanStatus().equals("Paid")) {
     		logicLayer.loanStatusUpdate(accountNumber,"Processing");
-    		//update after every process
     		map = logicLayer.clientCache(accountNumber);
     		
     			
@@ -83,14 +89,25 @@ public class MyServlet extends HttpServlet {
     	}
     	}
     	
+    	
+    	
+    	
+    	//setSessionAccountNumber
+    	else if(query.equals("setSessionAccountNumber")) {
+    	long accNumber = 	Long.parseLong(request.getParameter("y"));
+    	map = logicLayer.clientCache(accNumber);
+    	request.getSession().setAttribute("acc", accNumber);
+    	long accountNumber = (long) request.getSession().getAttribute("acc");
+    	out.print(accountNumber);
+    	}
+    	
     	//add new customer  - DONE
     	
     	else if(query.equals("Submit")) {
     		
     		AccountInfo accountInfo = new AccountInfo();
     		int id = (int) request.getSession().getAttribute("message");
-    		//long accountNumber = (long) request.getSession().getAttribute("acc");
-    		//System.out.println(id+" login id");
+    		
     		
     		String bank = request.getParameter("bankname");
     		long balance = Long.parseLong(request.getParameter("balance"));
@@ -98,9 +115,14 @@ public class MyServlet extends HttpServlet {
     		accountInfo.setBankName(bank);
     		accountInfo.setBalance(balance);
     		logicLayer.accountInsert(accountInfo);
-    		out.print("Yes!!");
-
     		
+    		request.getSession().setAttribute("message", id);
+			//request.getSession().setAttribute("name", userName);
+			HashMap<Integer,CustomerInfo> map1 = logicLayer.getAccountNumbersList(id);
+			CustomerInfo customerInfo =  map1.get(id);
+			list = (ArrayList<Long>) customerInfo.getList();
+			request.getSession().setAttribute("AccountNumberList", list);
+			out.print("New Account Created Successfully !!");
     	}
     	
     	//new customer details filling - DONE
@@ -114,17 +136,20 @@ public class MyServlet extends HttpServlet {
     		long mobile = Long.parseLong(request.getParameter("mobile"));
     		String bank = request.getParameter("bankname");
     		String address = request.getParameter("Address");
+    		String password = request.getParameter("Password");
+    		
     				
     		long balance = Long.parseLong(request.getParameter("balance"));
     		
     		customerInfo.setName(name);
     		customerInfo.setMobileNumber(mobile);
     		customerInfo.setAddress(address);
+    		customerInfo.setPassword(password);
     		accountInfo.setBankName(bank);
     		accountInfo.setBalance(balance);
     		try {
-    			long accNumber = logicLayer.addNewCustomers(customerInfo, accountInfo);
-    			out.print("Welcome "+name+"\nYou have registered successfully ");
+    			int id = (int) logicLayer.addNewCustomers(customerInfo, accountInfo);
+    			out.print("Welcome "+name+" Your id is "+id);
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
@@ -147,14 +172,17 @@ public class MyServlet extends HttpServlet {
     		if(d==false) {
     		long balance = logicLayer.withDraw(accountNumber);
     		long temp =0;
+    		
     		if(balance>=amount){
-    			long bankCharge=1;	
+    			
     		balance = balance-amount;
+    		System.out.print(balance+" balance");
     		temp=balance-transactionCharges;
+    		System.out.print(temp+" tempbalance");
     		try {
     			logicLayer.updateBalance(temp, accountNumber);
     			logicLayer.bankAccount(transactionCharges);
-    			logicLayer.history(accountNumber, "Send to "+receiverAccountNumber, balance, transactionCharges);
+    			logicLayer.history(accountNumber, "Send to "+receiverAccountNumber, amount, transactionCharges,temp);
     			
     		}catch (Exception e) {
 				
@@ -165,19 +193,13 @@ public class MyServlet extends HttpServlet {
     		temp=balance;
     		try {
     			logicLayer.updateBalance(temp, receiverAccountNumber);
-    			logicLayer.history(receiverAccountNumber, "Received from "+accountNumber, balance, 0);
+    			logicLayer.history(receiverAccountNumber, "Received from "+accountNumber, balance, 0,temp);
+    			out.print("Fund transferred successfully");
 			} catch (SQLException e) {
 				
 				e.printStackTrace();
 			}
-//    		try {
-//    			//logicLayer.transaction_history(accountNumber,receiverAccountNumber,amount);
-//
-//              	out.print("Succesfully!! and ur remaining balance is "+temp+" Bank charges: "+bankCharge);
-//			} catch (SQLException e) {
-//				
-//				e.printStackTrace();
-//			}
+
 
     		}else {
     			
@@ -225,7 +247,7 @@ public class MyServlet extends HttpServlet {
     		if(b==false) {
 			long balance = logicLayer.checkBalance(accountNumber);
           	out.print("Succesfully!!"
-          			+ "and you Balance is : "+balance);
+          			+ "and your current Balance is : "+balance);
     		}
     		else {
               	out.print("Enter the correct Account Number! Account number not exists");
@@ -245,11 +267,12 @@ public class MyServlet extends HttpServlet {
     		if(b==false) {
     		try {
     			logicLayer.deleteFromAccountTable(accountNumber);
+    			out.print("Succesfully!!");
 			} catch (SQLException e) {
 				
 				e.printStackTrace();
 			}
-          	out.print("Succesfully!!");
+          	
 //          	RequestDispatcher rd = request.getRequestDispatcher("welcome.jsp");
 //            rd.forward(request, response);
     		}else {
@@ -308,6 +331,11 @@ public class MyServlet extends HttpServlet {
     	//withdraw page - DONE
     	
     	else if(query.equalsIgnoreCase("withDrawSubmit")) {
+//    		int id = (int) request.getSession().getAttribute("message");
+//    		HashMap<Integer,CustomerInfo> map1 = logicLayer.getAccountNumbersList(id);
+//			CustomerInfo customerInfo =  map1.get(id);
+//			list = (ArrayList<Long>) customerInfo.getList();
+//    		request.getSession().setAttribute("AccountNumberList", list);
     		long acc_Number = (long) request.getSession().getAttribute("acc");
     		boolean a = logicLayer.checkAccountNumber(acc_Number);
     		long updatedBalance=0;
@@ -322,7 +350,7 @@ public class MyServlet extends HttpServlet {
     		try {
     			logicLayer.updateBalance(updatedBalance, acc_Number);
     			logicLayer.bankAccount(withdrawCharges);
-    			logicLayer.history(acc_Number,"With Draw",amountLong,withdrawCharges);
+    			logicLayer.history(acc_Number,"With Draw",amountLong,withdrawCharges,updatedBalance);
 			} catch (SQLException e) {
 				
 				e.printStackTrace();
@@ -331,7 +359,7 @@ public class MyServlet extends HttpServlet {
           	out.print("Successfully!!! and ur remaining balance is "+updatedBalance+" Bank charges: "+withdrawCharges+" Rupees");
     		}else {
     			
-              	out.print(balance);
+              	out.print("Insufficient Fund");
 			}
     		}else {
     			
@@ -357,7 +385,7 @@ public class MyServlet extends HttpServlet {
     		try {
     			logicLayer.updateBalance(updatedBalance, acc_Number);
     			logicLayer.bankAccount(depositCharges);
-    			logicLayer.history(acc_Number,"Deposit",amountLong,withdrawCharges);
+    			logicLayer.history(acc_Number,"Deposit",amountLong,withdrawCharges,updatedBalance);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -395,56 +423,130 @@ public class MyServlet extends HttpServlet {
     	 //Login
     	
     	else if(query.equalsIgnoreCase("loginSubmit")) {
-        	
+    		//out.print("user id or userName ");
     		int id = Integer.parseInt(request.getParameter("Id"));
-    		
-    		long accountNumber = Long.parseLong(request.getParameter("AccountNumber"));
-    		int n = logicLayer.checkLogin(id,accountNumber);
+    	String password =	request.getParameter("Password");
+    		//long accountNumber = Long.parseLong(request.getParameter("AccountNumber"));
+    		int n = logicLayer.checkLogin(id,password);
     		if(n==1) {
     			request.getSession().setAttribute("message", id);
-    			request.getSession().setAttribute("acc", accountNumber);
-    			map = logicLayer.clientCache(accountNumber);
-    		RequestDispatcher rd = request.getRequestDispatcher("Login.jsp");
-            rd.forward(request, response);
+    			//request.getSession().setAttribute("name", userName);
+    			HashMap<Integer,CustomerInfo> map1 = logicLayer.getAccountNumbersList(id);
+    			CustomerInfo customerInfo =  map1.get(id);
+    			list = (ArrayList<Long>) customerInfo.getList();
+    		long mobile = 	customerInfo.getMobileNumber();
+    	String address =	customerInfo.getAddress();
+    		request.getSession().setAttribute("mobile", mobile);
+    		request.getSession().setAttribute("address", address);
+    		
+    			//System.out.print(list+" list1");
+    			//HashMap<Integer, CustomerInfo>map1 = CacheStore.INSTANCE.returnCustomerMapStore();
+    			//request.getSession().setAttribute("acc", accountNumber);
+    			//map = logicLayer.clientCache(accountNumber);
+    			request.getSession().setAttribute("AccountNumberList", list);
+    			
+    			//System.out.print(list+" list");
+    			//out.print("true");
+
+        		JSONArray values= new JSONArray();
+    			for(int i=0;i<list.size();i++) {
+    				long acc = list.get(i);
+    				
+    				values.put(acc);
+    				
+    			}
+    			//System.out.print(values.toString()+" list1");
+    			out.print(values.toString());
+    			
+    			
+    			
+    			
+    			//RequestDispatcher rd = request.getRequestDispatcher("LoginSideNav.jsp");
+//    		RequestDispatcher rd = request.getRequestDispatcher("Login.jsp");
+//            rd.forward(request, response);
     		}
     		else {
-    			request.setAttribute("message", "wrong");
-    			
-    			RequestDispatcher rd = request.getRequestDispatcher("welcome.jsp");
-                rd.forward(request, response);
+    			out.print("false");
+//    			request.setAttribute("message", "wrong");
+//    			
+//    			RequestDispatcher rd = request.getRequestDispatcher("welcome.jsp");
+//                rd.forward(request, response);
                 
     		}
     		
         }
+    	
+    	else if(query.equalsIgnoreCase("setAccountNumber")) {
+    	List<Long> list = 	(List<Long>) request.getSession().getAttribute("AccountNumberList");
+    	JSONArray values= new JSONArray();
+		for(int i=0;i<list.size();i++) {
+			long acc = list.get(i);
+			
+			values.put(acc);
+			
+		}
+		//System.out.print(values.toString()+" list1");
+		out.print(values.toString());
+		
+    		
+    	}
+    	
     	//mobile number update submit
 	else if(query.equalsIgnoreCase("mobileUpdateSubmit")) {
         
     		long newMobile = Long.parseLong(request.getParameter("mobileUpdate"));
     		int id = (int) request.getSession().getAttribute("message");
-    		
+    		request.getSession().setAttribute("AccountNumberList", list);
     			logicLayer.changeMobile(newMobile,id);
     			
     			out.print("changed successfully!!");
-            
+    			HashMap<Integer,CustomerInfo> map1 = logicLayer.getAccountNumbersList(id);
+    			CustomerInfo customerInfo =  map1.get(id);
     			
+    		long mobile = 	customerInfo.getMobileNumber();
+    		request.getSession().setAttribute("mobile", mobile);
     		
         }
     	
-    	
+    	//old mobile
+	else if(query.equalsIgnoreCase("oldMobile")) {
+        
+			long mobileLong = 	(long) request.getSession().getAttribute("mobile");
+			
+			
+			out.print(mobileLong);
+			
+			}
+	
+     	//old address
+    	else if(query.equalsIgnoreCase("oldAddress")) {
+            
+    			String address =(String) request.getSession().getAttribute("address");
+    			
+    			
+    			out.print(address);
+    			
+    			}
     	
     	//address update submit
     	else if(query.equalsIgnoreCase("addressUpdateSubmit")) {
             
     		String newAddress = request.getParameter("addressUpdate");
     		int id = (int) request.getSession().getAttribute("message");
-    		
+    		request.getSession().setAttribute("AccountNumberList", list);
     			logicLayer.changeAddress(newAddress, id);
     			
     			out.print("changed successfully!!");
+    			HashMap<Integer,CustomerInfo> map1 = logicLayer.getAccountNumbersList(id);
+    			CustomerInfo customerInfo =  map1.get(id);
+    			
+    		String address = 	customerInfo.getAddress();
+    		request.getSession().setAttribute("address", address);
     			}
     	
     	//load paid
     	else if (query.equalsIgnoreCase("loanPaidSubmit")) {
+    		//request.getSession().setAttribute("AccountNumberList", list);
     		long accountNumber = (long) request.getSession().getAttribute("acc");
     		AccountInfo accountInfo = map.get(accountNumber);
     		if(accountInfo.getLoanStatus().equals("Approved")) {
@@ -460,7 +562,7 @@ public class MyServlet extends HttpServlet {
     		try {
     			logicLayer.updateBalance(balance, accountNumber);
     			
-    			logicLayer.history(accountNumber,"Loan Paid",loanAmount,0);
+    			logicLayer.history(accountNumber,"Loan Paid",loanAmount,0,balance);
 			} catch (SQLException e) {
 				
 				e.printStackTrace();
@@ -486,6 +588,7 @@ public class MyServlet extends HttpServlet {
     	
     	//mobile Recharge Submit
 else if(query.equalsIgnoreCase("mobileRechargeSubmit")) {
+//	request.setAttribute("AccountNumberList", list);
             long updatedBalance=0;
     		long mobile =Long.parseLong(request.getParameter("Mobile"));
     		long amount =Long.parseLong(request.getParameter("Amount"));
@@ -498,7 +601,7 @@ else if(query.equalsIgnoreCase("mobileRechargeSubmit")) {
     		try {
     			logicLayer.updateBalance(updatedBalance, accountNumber);
     			//logicLayer.bankAccount(withdrawCharges);
-    			logicLayer.history(accountNumber,"Mobile Recharge",amount,0);
+    			logicLayer.history(accountNumber,"Mobile Recharge",amount,0,updatedBalance);
 			} catch (SQLException e) {
 				
 				e.printStackTrace();
@@ -513,6 +616,8 @@ else if(query.equalsIgnoreCase("mobileRechargeSubmit")) {
     			
     			}
 
+
+
     	
     	
                 }
@@ -521,6 +626,8 @@ else if(query.equalsIgnoreCase("mobileRechargeSubmit")) {
     	String query = request.getParameter("page");
     	PrintWriter out = response.getWriter();
     	LogicLayer logicLayer = new LogicLayer();
+    	List<Long> list1 = new ArrayList<Long>();
+    	//list1.add((long) 0);
         //customer list active - done
           
           ArrayList<CustomerInfo> customerList=null;
@@ -621,6 +728,8 @@ else if(query.equalsIgnoreCase("mobileRechargeSubmit")) {
                     		System.out.println(e);		
 
                     }
+                    	
+                    	//appliedloan list
                     	 ArrayList<AccountInfo> appliedLoanList=null;
                        	try {
                        		
@@ -633,87 +742,197 @@ else if(query.equalsIgnoreCase("mobileRechargeSubmit")) {
                        		System.out.println(e);		
 
                        }
+                       	
+                       	//waiting list
+                       	
+                        ArrayList<AccountInfo> waitingLoanList=null;
+                       	try {
+                       		
+                       		waitingLoanList = logicLayer.getWaitingLoanList() ;
+                       
+                       	}
+                       
+                       catch (Exception e) {
+                       	
+                       		System.out.println(e);		
 
-            
+                       }
+
+                       	//Block list
+                       	
+                        ArrayList<AccountInfo> blockLoanList=null;
+                       	try {
+                       		
+                       		blockLoanList = logicLayer.getBlockLoanList() ;
+                       
+                       	}
+                       
+                       catch (Exception e) {
+                       	
+                       		System.out.println(e);		
+
+                       }
     	
     	
           //Home - DONE
         	
-        	if(query.equalsIgnoreCase("home")) {
-            	RequestDispatcher rd = request.getRequestDispatcher("welcome.jsp");
-            	rd.forward(request, response);
-            }
+//        	if(query.equalsIgnoreCase("home")) {
+//				/*
+//				 * RequestDispatcher rd = request.getRequestDispatcher("welcome.html");
+//				 * rd.forward(request, response);
+//				 */
+//            }
         	//show customer list - active - DONE
         	
-        	else if(query.equalsIgnoreCase("customer")) {
-        	
-        request.setAttribute("output", customerList);
-        RequestDispatcher rd = request.getRequestDispatcher("customer.jsp");
-        rd.forward(request, response);
+        	 if(query.equalsIgnoreCase("customer")) {
+//        		System.out.print(customerList+" Hihello");
+//        		request.setAttribute("output", customerList);
+        		//System.out.print(" Hihello");
+        		//out.print(customerList);
+        		
+
+    			
+    			JSONArray values= new JSONArray();
+    			for(int i=0;i<customerList.size();i++) {
+    				CustomerInfo customerInfo = customerList.get(i);
+    				JSONObject data = new JSONObject(customerInfo);
+    				values.put(data);
+    				
+    			}
+    			
+    			out.print(values.toString());
+
         }
+        	
+//        	else if(query.equalsIgnoreCase("customers")) {
+////        		System.out.print(customerList+" Hihello");
+////        		request.setAttribute("output", customerList);
+//        		out.print("HI");
+//
+//        }
+//	//mobile number update page
+//        	
+//        	else if(query.equalsIgnoreCase("MobileUpdate")) {
+//        	
+//        		request.setAttribute("AccountNumberList", list);
+//        RequestDispatcher rd = request.getRequestDispatcher("MobileUpdate.jsp");
+//        rd.forward(request, response);
+//        }
         
             //show inactive customer - DONE
             
         	else if(query.equalsIgnoreCase("inActiveCustomer")) {
         	
-            request.setAttribute("value", inActiveCustomerList);
-          
-            RequestDispatcher rd = request.getRequestDispatcher("ViewDeleteCustomer.jsp");
-            rd.forward(request, response);
+//            request.setAttribute("value", inActiveCustomerList);
+//          
+//            RequestDispatcher rd = request.getRequestDispatcher("ViewDeleteCustomer.jsp");
+//            rd.forward(request, response);
+        		JSONArray values= new JSONArray();
+    			for(int i=0;i<inActiveCustomerList.size();i++) {
+    				CustomerInfo customerInfo = inActiveCustomerList.get(i);
+    				JSONObject data = new JSONObject(customerInfo);
+    				values.put(data);
+    				
+    			}
+    			
+    			out.print(values.toString());
             }
         
       //show inactive Account - DONE
         
         	else if(query.equalsIgnoreCase("inActiveAccount")) {
         	
-            request.setAttribute("output", inActiveAccountList);
-          
-            RequestDispatcher rd = request.getRequestDispatcher("ViewDeleteAccounts.jsp");
-            rd.forward(request, response);
+//            request.setAttribute("output", inActiveAccountList);
+//          
+//            RequestDispatcher rd = request.getRequestDispatcher("ViewDeleteAccounts.jsp");
+//            rd.forward(request, response);
+        		
+        		JSONArray values= new JSONArray();
+    			for(int i=0;i<inActiveAccountList.size();i++) {
+    				AccountInfo accountInfo = inActiveAccountList.get(i);
+    				JSONObject data = new JSONObject(accountInfo);
+    				values.put(data);
+    				
+    			}
+    			
+    			out.print(values.toString());
+
+        		
+        		
             }
      
      //show withdraw deposit histories - DONE
      
         	else if(query.equalsIgnoreCase("history")) {
      	
-         request.setAttribute("output", histories);
-       
-         RequestDispatcher rd = request.getRequestDispatcher("History.jsp");
-         rd.forward(request, response);
+//         request.setAttribute("output", histories);
+//       
+//         RequestDispatcher rd = request.getRequestDispatcher("History.jsp");
+//         rd.forward(request, response);
+        		JSONArray values= new JSONArray();
+    			for(int i=0;i<histories.size();i++) {
+    				History history = histories.get(i);
+    				JSONObject data = new JSONObject(history);
+    				values.put(data);
+    				
+    			}
+    			
+    			out.print(values.toString());
          }
      
      //show transaction list - DONE
      
-     
-        	else if(query.equalsIgnoreCase("transactionHistory")) {
-    	 	
-         request.setAttribute("output", transactionHistory);
-       
-         RequestDispatcher rd = request.getRequestDispatcher("TransactionHistory.jsp");
-         rd.forward(request, response);
-         }
+     //no need
+//        	else if(query.equalsIgnoreCase("transactionHistory")) {
+//        		//request.setAttribute("AccountNumberList", list);
+//    	 	
+//         request.setAttribute("output", transactionHistory);
+//       
+//         RequestDispatcher rd = request.getRequestDispatcher("TransactionHistory.jsp");
+//         rd.forward(request, response);
+//         }
      
      //Show account list - active - DONE
      
         	else if(query.equalsIgnoreCase("account")) {
-        	request.setAttribute("output", accountList);
-        	RequestDispatcher rd = request.getRequestDispatcher("account.jsp");
-        	rd.forward(request, response);
+        		
+				/*
+				 * request.setAttribute("output", accountList); RequestDispatcher rd =
+				 * request.getRequestDispatcher("account.jsp"); rd.forward(request, response);
+				 */
+        	//System.out.print(" Hihello");
+    		//out.print(customerList);
+    		
+
+			
+			JSONArray values= new JSONArray();
+			for(int i=0;i<accountList.size();i++) {
+				AccountInfo accountInfo = accountList.get(i);
+				JSONObject data = new JSONObject(accountInfo);
+				values.put(data);
+				
+			}
+			
+			out.print(values.toString());
+
+        	
+        	
         }
             //add a new customer page-DONE
-            
-        	else if(query.equalsIgnoreCase("addcustomer")) {
-        	RequestDispatcher rd = request.getRequestDispatcher("AddCustomer.jsp");
-        	rd.forward(request, response);
-        }
-        
+            //----------for ajax----------//
+//        	else if(query.equalsIgnoreCase("addcustomer")) {
+//        	RequestDispatcher rd = request.getRequestDispatcher("AddCustomer.jsp");
+//        	rd.forward(request, response);
+//        }
+//        
         	
         	  //add new account for existing customer - DONE
-            
-        	else if(query.equalsIgnoreCase("addaccount")) {
-        	RequestDispatcher rd = request.getRequestDispatcher("AddAccount.jsp");
-        	rd.forward(request, response);
-        }
+            //--------------for ajax--------------------//
+//        	else if(query.equalsIgnoreCase("addaccount")) {
+//        		request.getSession().setAttribute("AccountNumberList", list);
+//        	RequestDispatcher rd = request.getRequestDispatcher("AddAccount.jsp");
+//        	rd.forward(request, response);
+//        }
         	
         	
             //delete page - DONE
@@ -728,77 +947,133 @@ else if(query.equalsIgnoreCase("mobileRechargeSubmit")) {
             
             
         	else if(query.equalsIgnoreCase("deleteAccounts")) {
+        		
         	RequestDispatcher rd = request.getRequestDispatcher("DeleteAccount.jsp");
         	rd.forward(request, response);
         }
         
-            //activate a customer - DONE
-            
-        	else if(query.equalsIgnoreCase("reNewCustomer")) {
-        	RequestDispatcher rd = request.getRequestDispatcher("RenewOldCustomer.jsp");
-        	rd.forward(request, response);
-        }
-            //Activate an account - DONE
-            
-        	else if(query.equalsIgnoreCase("reNewAccount")) {
-        	RequestDispatcher rd = request.getRequestDispatcher("RenewOldAccount.jsp");
-        	rd.forward(request, response);
-        }	
-        	
+        	 //---for ajax---
+//            //activate a customer - DONE
+//            
+//        	else if(query.equalsIgnoreCase("reNewCustomer")) {
+//        	RequestDispatcher rd = request.getRequestDispatcher("RenewOldCustomer.jsp");
+//        	rd.forward(request, response);
+//        }
+//            //Activate an account - DONE
+//            
+//        	else if(query.equalsIgnoreCase("reNewAccount")) {
+//        	RequestDispatcher rd = request.getRequestDispatcher("RenewOldAccount.jsp");
+//        	rd.forward(request, response);
+//        }	
+        	//--------------for ajax------------//
         	  //withdraw page - DONE
-            
-        	else if(query.equalsIgnoreCase("withDraw")) {
-        	RequestDispatcher rd = request.getRequestDispatcher("WithDraw.jsp");
-        	rd.forward(request, response);
-        }
-        
-        //deposit page - DONE
-        
-        	else if(query.equalsIgnoreCase("deposit")) {
-        	RequestDispatcher rd = request.getRequestDispatcher("Deposit.jsp");
-        	rd.forward(request, response);
-        }
+//            
+//        	else if(query.equalsIgnoreCase("withDraw")) {
+////        		int id = (int) request.getSession().getAttribute("message");
+////        		HashMap<Integer,CustomerInfo> map1 = logicLayer.getAccountNumbersList(id);
+////    			CustomerInfo customerInfo =  map1.get(id);
+////    			list = (ArrayList<Long>) customerInfo.getList();
+////        		request.getSession().setAttribute("AccountNumberList", list);
+////        	RequestDispatcher rd = request.getRequestDispatcher("WithDraw.jsp");
+////        	rd.forward(request, response);
+//        }
+//        
+        	 
+        	 
+        	 //--------for ajax-----------
+//        //deposit page - DONE
+//        
+//        	else if(query.equalsIgnoreCase("deposit")) {
+//        		request.getSession().setAttribute("AccountNumberList", list);
+//        	RequestDispatcher rd = request.getRequestDispatcher("Deposit.jsp");
+//        	rd.forward(request, response);
+//        }
     	
+        	//--------for ajax-----------
+        	 
             //show transaction page-DONE
             
-        	else if(query.equalsIgnoreCase("transaction")) {
-        	RequestDispatcher rd = request.getRequestDispatcher("transaction.jsp");
-        	rd.forward(request, response);
-        }
+//        	else if(query.equalsIgnoreCase("transaction")) {
+//        		request.getSession().setAttribute("AccountNumberList", list);
+//        	RequestDispatcher rd = request.getRequestDispatcher("transaction.jsp");
+//        	rd.forward(request, response);
+//        }
         	
-        	  //transaction history page - DONE
-            
-        	else if(query.equalsIgnoreCase("transactionHistory")) {
-        	RequestDispatcher rd = request.getRequestDispatcher("TransactionHistory.jsp");
-        	rd.forward(request, response);
-        }
+//        	  //transaction history page - DONE
+//            // no need
+//        	else if(query.equalsIgnoreCase("transactionHistory")) {
+//        		request.getSession().setAttribute("AccountNumberList", list);
+//        	RequestDispatcher rd = request.getRequestDispatcher("TransactionHistory.jsp");
+//        	rd.forward(request, response);
+//        }
+        	 
+        	 
+        	 
         	  //all history
-        	else if(query.equalsIgnoreCase("allHistory")) {
-        		RequestDispatcher rd = request.getRequestDispatcher("AllHistory.jsp");
-            	rd.forward(request, response);
-        	}
+        	 //no need
+//        	else if(query.equalsIgnoreCase("allHistory")) {
+//        		request.getSession().setAttribute("AccountNumberList", list);
+//        		RequestDispatcher rd = request.getRequestDispatcher("AllHistory.jsp");
+//            	rd.forward(request, response);
+//        	}
         	
         	
-  //client Loan - DONE
-            
-            
-        	else if(query.equalsIgnoreCase("clientLoan")) {
-        	RequestDispatcher rd = request.getRequestDispatcher("ClientLoan.jsp");
-        	rd.forward(request, response);
-        }
+//  //client Loan - DONE
+//            ---for ajax----
+//            
+//        	else if(query.equalsIgnoreCase("clientLoan")) {
+//        		request.getSession().setAttribute("AccountNumberList", list);
+//        	RequestDispatcher rd = request.getRequestDispatcher("ClientLoan.jsp");
+//        	rd.forward(request, response);
+//        }
         	
         	//show approved loans
         	else if(query.equalsIgnoreCase("approvedLoans")) {
+        		//request.setAttribute("AccountNumberList", list);
+//        		
+//        		request.setAttribute("output", approvedLoanList);
+//            	RequestDispatcher rd = request.getRequestDispatcher("ShowApprovedLoans.jsp");
+//            	
+//            	rd.forward(request, response);
         		
-        		request.setAttribute("output", approvedLoanList);
-            	RequestDispatcher rd = request.getRequestDispatcher("ShowApprovedLoans.jsp");
+        		JSONArray values= new JSONArray();
+    			for(int i=0;i<approvedLoanList.size();i++) {
+    				AccountInfo accountInfo = approvedLoanList.get(i);
+    				JSONObject data = new JSONObject(accountInfo);
+    				values.put(data);
+    				
+    			}
+    			
+    			out.print(values.toString());
+        		
+        	}
+        	
+        	//show waiting loans list
+        	else if(query.equalsIgnoreCase("waitingLoansList")) {
+        		//request.setAttribute("AccountNumberList", list);
+        		
+        		request.setAttribute("output", waitingLoanList);
+            	RequestDispatcher rd = request.getRequestDispatcher("ShowWaitingLoans.jsp");
             	
             	rd.forward(request, response);
         	}
         	
+        	//show block loans list
+        	else if(query.equalsIgnoreCase("blockLoansList")) {
+        		//request.setAttribute("AccountNumberList", list);
+        		
+        		request.setAttribute("output", blockLoanList);
+            	RequestDispatcher rd = request.getRequestDispatcher("ShowBlockLoans.jsp");
+            	
+            	rd.forward(request, response);
+        	}
+        	
+        	
+        	
         	//loan paid page
         	
         	else if(query.equalsIgnoreCase("loanPaidSubmit")) {
+        		request.getSession().setAttribute("AccountNumberList", list);
         		RequestDispatcher rd = request.getRequestDispatcher("PayLoan.jsp");
             	rd.forward(request, response);
         	}
@@ -806,10 +1081,21 @@ else if(query.equalsIgnoreCase("mobileRechargeSubmit")) {
 //show applied loans
         	else if(query.equalsIgnoreCase("appliedLoans")) {
         		
-        		request.setAttribute("output", appliedLoanList);
-            	RequestDispatcher rd = request.getRequestDispatcher("ShowAppliedLoans.jsp");
-            	
-            	rd.forward(request, response);
+//        		
+//        		request.setAttribute("output", appliedLoanList);
+//            	RequestDispatcher rd = request.getRequestDispatcher("ShowAppliedLoans.jsp");
+//            	
+//            	rd.forward(request, response);
+
+    			JSONArray values= new JSONArray();
+    			for(int i=0;i<appliedLoanList.size();i++) {
+    				AccountInfo accountInfo = appliedLoanList.get(i);
+    				JSONObject data = new JSONObject(accountInfo);
+    				values.put(data);
+    				
+    			}
+    			
+    			out.print(values.toString());
         	}
         	
      //approve loan  
@@ -818,7 +1104,7 @@ else if(query.equalsIgnoreCase("mobileRechargeSubmit")) {
         		String one="loanAccount";
         		long loanAmount=100;
         	long accountNumber = Long.parseLong(request.getParameter("accountNumber"));
-        	
+        	System.out.print(accountNumber+" accountNumber");
         	long balanceBank = logicLayer.bankAmount(one);
         	//if(balanceBank>=loanAmount) {
         	logicLayer.loanStatusUpdate(accountNumber,"Approved");
@@ -836,7 +1122,7 @@ else if(query.equalsIgnoreCase("mobileRechargeSubmit")) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-    			logicLayer.history(accountNumber,"Loan debited",loanAmount,0);
+    			logicLayer.history(accountNumber,"Loan debited",loanAmount,0,balance);
     			out.print("Loan Approved Successfully!! by admin");
         	request.setAttribute("output", appliedLoanList);
         	RequestDispatcher rd = request.getRequestDispatcher("ShowAppliedLoans.jsp");
@@ -853,6 +1139,73 @@ else if(query.equalsIgnoreCase("mobileRechargeSubmit")) {
 //        	}
         	}
         	
-   
+        	//reject loan
+        	
+        	else if(query.equals("loanReject")) {
+        	
+        	long accountNumber = Long.parseLong(request.getParameter("accountNumber"));
+        	
+        	logicLayer.loanStatusUpdate(accountNumber,"Rejected");
+        	appliedLoanList = logicLayer.getAppliedLoanList() ;
+        	request.setAttribute("output", appliedLoanList);
+        	RequestDispatcher rd = request.getRequestDispatcher("ShowAppliedLoans.jsp");
+        	
+        	rd.forward(request, response);
+        	}
+        	
+	//waiting list loan
+        	
+        	else if(query.equals("loanWaitingList")) {
+        	
+        	long accountNumber = Long.parseLong(request.getParameter("accountNumber"));
+        	
+        	logicLayer.loanStatusUpdate(accountNumber,"Waiting List");
+        	appliedLoanList = logicLayer.getAppliedLoanList() ;
+        	request.setAttribute("output", appliedLoanList);
+        	RequestDispatcher rd = request.getRequestDispatcher("ShowAppliedLoans.jsp");
+        	
+        	rd.forward(request, response);
+        	}
+        	
+	//block loan
+        	
+        	else if(query.equals("loanBlock")) {
+        	
+        	long accountNumber = Long.parseLong(request.getParameter("accountNumber"));
+        	
+        	logicLayer.loanStatusUpdate(accountNumber,"Blocked");
+        	appliedLoanList = logicLayer.getAppliedLoanList() ;
+        	request.setAttribute("output", appliedLoanList);
+        	RequestDispatcher rd = request.getRequestDispatcher("ShowAppliedLoans.jsp");
+        	
+        	rd.forward(request, response);
+        	}
+        	
+        	
+        	
+        	//logout
+        	
+        	else if(query.equalsIgnoreCase("logout")) {
+        		request.getSession().invalidate();
+
+//        		request.getSession().setAttribute("message", "");
+//        		request.getSession().setAttribute("name", "");
+//        		request.getSession().setAttribute("acc", "");
+//        		//list.clear();
+//        		request.getSession().setAttribute("AccountNumberList", null);
+//        		request.getSession().invalidate();
+//        	List<Long>list11	= (List<Long>) request.getSession().getAttribute("AccountNumberList");
+//        	System.out.print(list11+" list11");
+        		//request.getSession().setAttribute("name", userName);
+//        		response.setHeader("Pragma","no-cache");
+//        		response.setHeader("Cache-Control","no-store");
+//        		response.setHeader("Expires","0");
+//        		response.setDateHeader("Expires",-1);
+//        		request.getSession().invalidate();
+        		
+        		RequestDispatcher rd = request.getRequestDispatcher("welcome.html");
+        		rd.forward(request, response);
+        	}
+
     }
 }
