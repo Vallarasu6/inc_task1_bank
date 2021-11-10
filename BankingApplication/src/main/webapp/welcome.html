@@ -9,7 +9,7 @@
      </script>
      <script>
      $(function(){
-    	 $('#header').load("header.html");
+    	 $('#header').load("HeaderWelcome.html");
     	
      });
      </script>
@@ -65,62 +65,13 @@ body{
 </head>
 <body>
 <div id="header"></div>
-  <div id="log"></div>
-  <div id="register"></div>
-   <div id="admin"></div>
-  <div id="log1">
-
-   
-     <div class="container">
- <!--  <form action="MyServlett" method="POST"> -->
-    <div class="col">
-    <div class="container">
-    <div class="text-center">
-       <div class="form-group row" >
-        <label for="name" class="col-sm-12 col-form-label fw-bold mb-2 text-uppercase "><b>User Login</b></label>
-       
-    </div>
-    <div id="error" style="color:red"> </div>
-    <div class="form-group row" >
-   
-        <label for="name" class="col-sm-3 col-form-label">Id</label>
-        <div class="col-sm-9" >
-            <input type="text" name = "Id" class="form-control" onkeypress="isInputNumber(event)" id="id" placeholder="Enter your id" required>
-           <p id="idCheck" style="color:red" ></p>
-        </div>
-    </div>
-    <!-- <div class="form-group row">
-        <label for="name" class="col-sm-3 col-form-label">Name</label>
-        <div class="col-sm-9">
-            <input type="text" name = "userName" class="form-control" id="userName" placeholder="Enter your name" required>
-           <p id="nameCheck" style="color:red" ></p>
-        </div>
-    </div> -->
-    <div class="form-group row">
-        <label for="password" class="col-sm-3 col-form-label">Password</label>
-        <div class="col-sm-9">
-            <input type="password" name="Password" class="form-control"  id="password" placeholder="Enter your password" >
-            <p id="passwordCheck" style="color:red" ></p>
-            
-        </div>
-    </div>
-    
-    
-    <div class="form-group row">
-        <div class="col-sm-12">
-            <button  id="btn1" class="btn btn-primary" onclick = "validate()" name="page" value="loginSubmit" > Login</button><br><br>
-            <p>Don't you have account?<button  id="registerBtn">Register here</button></p>
-          
-        </div>
-        </div>
-    </div>
-  
-  </div>
- 
- </div>
- <!-- </form> -->
- </div>
+  <div class="index"  id="login"></div>
+  <div class="index" id="register"></div>
+   <div class="index"  id="admin"></div>
+   <div class="index" >
  <div class="container">
+ <button id="loginBtn">Login</button>
+ <button id="registerBtn">Register</button>
  <p>
  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam euismod malesuada auctor. Nullam elementum elit felis, in convallis nisl volutpat vitae. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nulla facilisi. Pellentesque vel cursus elit. In euismod ex sed nisi rhoncus, sit amet ultrices sem tincidunt. Fusce pulvinar ex quis dui sollicitudin tincidunt. Etiam metus lorem, venenatis ac erat nec, dapibus semper arcu. Suspendisse auctor massa quis neque molestie, non accumsan nisl vulputate. Vestibulum sed euismod quam.
 
@@ -140,84 +91,39 @@ consectetur. Etiam vitae volutpat sapien. Suspendisse sapien odio, iaculis ut or
 
 
 <div id="footer"></div>
-</div>
 
+</div>
 <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 <script type="text/javascript">
 
 
-function isInputNumber(evt){
-	var ch = String.fromCharCode(evt.which);
-	if(!(/[0-9]/.test(ch)))
-		evt.preventDefault();
-}
-
-
-
-function validate(){
-	var a = document.getElementById("id").value;
-	var b = document.getElementById("password").value;
-	
-	
-	if(a==''){
-		
-		document.getElementById("idCheck").innerHTML="Please enter your id";
-		 document.getElementById("idCheck").style.display='block';
-	}
-	else{
-		document.getElementById("idCheck").style.display='none';
-	} 
-if(b==''){
-		
-		document.getElementById("passwordCheck").innerHTML="Please enter your password";
-		 document.getElementById("passwordCheck").style.display='block';
-	}
-	else{
-		document.getElementById("passwordCheck").style.display='none';
-	} 
-if(document.getElementById("passwordCheck").style.display=='none' && document.getElementById("idCheck").style.display=='none' )
-	save();
-	} 
-	
-function save(){
-	var password = $("#password").val();
-	var Id = $("#id").val();
-
-	$.ajax({
-		type:'POST',
-		url:'MyServlett?Id='+Id+'&Password='+password+'&page=loginSubmit',
-		success: function(result){
-			
-			if(result === "false"){
-				$("#error").html('User id or user name is Wrong');
-				
-			}
-		 else{
-			
-				$("#log1").hide();
-				$("#log").load("LoginSideNav.html");
-				
-	          
-				} 
-		}
- 	});
-}
 
  $(document).ready(function(){
 	
 	$("#adminBtn").click(function(){
 		
-				$("#log1").hide();
+				$(".index").hide();
 				$("#admin").load("sidenav.html");
-				
+				$("#admin").show();
 			
 	});
 	
+	
+	$("#loginBtn").click(function(){
+		
+		$(".index").hide();
+		
+		$("#login").load("Login.html");
+		$("#login").show();
+		
+	
+});
+	
 	$("#registerBtn").click(function(){
 		
-		$("#log1").hide();
+		$(".index").hide();
 		$("#register").load("AddCustomer.html");
-		
+		$("#register").show();
 	
 });
 	

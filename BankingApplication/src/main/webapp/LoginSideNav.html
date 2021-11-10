@@ -1,93 +1,150 @@
-  <style type="text/css">
-    .sidenav {
-  height: 80%;
-  width: 169px;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 1	;
-  background-color:#ffe6b3;
-  overflow-x: hidden;
-  padding-top: 20px;
-  margin-top:120px;
-}
+  <!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Customer-Details</title>
 
-.sidenav a {
-  padding: 6px 8px 6px 16px;
-  text-decoration: none;
-  font-size: 18px;
-  color: black;
-  display: block;
-}
 
-.sidenav a:hover {
-  color: black;
-  background-color: white;
-  
-}
-.active{ background-color: red;}
-.main {
-  margin-left: 160px; 
-  font-size: 20px; 
-  padding: 0px 10px;
-}
-
-    </style>
-    <div id="balance" style="color:green;  margin-left: 800px; "></div>
+    <style>
+    .side-bar{
+    background: #f2f2f2;
+   width: 290px;
+   height: 100%;
+   position: fixed;
+   top: 0;
+   left: 0;
+   overflow-y: hidden;
+	margin-top:120px; 
+   
+    }
+    .side-bar .menu{
+    width: 100%;
     
-<div class="sidenav">
-
-<div id="accNumId" style="color:green"></div>
-<div id="accountDropDown"></div>
-
-
-<div id="sideNavigation">
-<button id="addaccountBtn">Add New Account</button><br>
-<button id="withDrawBtn">With Draw</button><br>
-<button id="depositBtn">Deposit</button><br>
-<button id="transactionBtn">Transaction</button><br>
-<button id="allHistoryBtn">All History</button><br>
-
-
-<!-- <a href="http://localhost:8080/BankingApplication/MyServlett?page=addaccount">Add New Account</a>
- -->
+     
+    }
+    .side-bar .menu .item{
+    position: relative;
+    cursor: pointer;
+    }
+    .side-bar .menu .item a{
+    color: black;
+    background: #ffe6b3;
+    font-size: 16px;
+    text-decoration: none;
+    display: block;
+    padding : 5px 30px;
+    line-height: 40px;
+    
+    }
+    .side-bar .menu .item a:hover{
+    background: white;
+    transition: 0.3s ease;
+    }
+    
+    .side-bar .menu .item a .dropdown{
+    position: absolute;
+    right:0;
+    margin : 20px;
+     transition: 0.3s ease;
+    
+    
+    }
+    .side-bar .menu .item .sub-menu{
+    background: #ffe6b3;
+    display: none;
+    
+    }
+    .side-bar .menu .item .sub-menu a{
+    padding-left: 80px;
+    }
+    .rotate{
+    transform: rotate(90deg);
+    }
+   
+    
+    </style>
+    <link rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        </head>
+<body>
  
-<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=withDraw">With Draw</a>
+
+<div class="sidenav">
+<div class="side-bar">
+<div class="menu">
+
+<div class="item" id="accountDropDown"></div>
+
+<!-- <div class="item"><a id="addaccountBtn">Add New Account</a></div>
+ --><div class="item"><a id="withDrawBtn">With Draw</a></div>
+<div class="item"><a id="depositBtn">Deposit</a></div>
+<div class="item"><a id="transactionBtn">Transaction</a></div>
+<!-- <div class="item"><a id="allHistoryBtn">All History</a></div>
  -->
-<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=deposit">Deposit</a>
- -->
-<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=transaction">Transaction</a>
- -->
-<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=allHistory">All history</a>
- -->
- <a href="#"id="balancebtn">Check Account Balance</a>
-<select id="update" name="updates" onchange="update(this.value)" style="border:none;">
+ <!-- <a href="#"id="balancebtn">Check Account Balance</a> -->
+ 
+ <div class="item"><a class="sub-btn">Update Profile<i class="fas fa-angle-right dropdown"></i></a>
+<div class="sub-menu">
+<a class="sub-item" id="mobileUpdateBtn">Mobile Num</a>
+<a class="sub-item" id="addressUpdateBtn">Address</a>
+
+</div>
+</div>
+ 
+<!--  
+<div class="item"><select id="update" name="updates" onchange="update(this.value)" style="border:none;">
 <option value="">Update Profile</option>
 <option value="mobile">Mobile Num</option>
-
-<option value="address" align="center">Address</option>
-
-
+<option value="address">Address</option>
 </select>
-<button id="clientLoanBtn">Loan</button><br>
+</div> -->
 
- <a href="http://localhost:8080/BankingApplication/MyServlett?page=deleteAccounts">Delete Account</a>
+<!-- <div class="item"><a id="clientLoanBtn">Loan</a></div>
+ -->
+<!--  <div class="item"><a href="http://localhost:8080/BankingApplication/MyServlett?page=deleteAccounts">Delete Account</a></div>
  
- <a href="http://localhost:8080/BankingApplication/MyServlett?page=deleteCustomer">Delete Customer</a>
+ <div class="item"><a href="http://localhost:8080/BankingApplication/MyServlett?page=deleteCustomer">Delete Customer</a></div>
+ -->
+ <div class="item"><a class="sub-btn">Recharge<i class="fas fa-angle-right dropdown"></i></a>
+<div class="sub-menu">
+<a class="sub-item" id="mobileRechargeBtn">Mobile Recharge</a>
+<a class="sub-item" id="DTHRechargeBtn">DTH Recharge</a>
 
-<!--  <a href="http://localhost:8080/BankingApplication/MyServlett?page=clientLoan">Loan</a>  
- --> 
- <select id="bills" name="Bills" onchange="bills(this.value)" style="border:none;">
+</div>
+</div>
+
+<!--  <div class="item"><select id="bills" name="Bills" onchange="bills(this.value)" style="border:none;">
 <option value="">Bills and recharge</option>
 
 <option value="mobile">Mobile Recharge</option>
 <option value="dth">DTH</option>
-</select>        
+</select>    
 
- <a href="http://localhost:8080/BankingApplication/MyServlett?page=logout" id="logout" >Logout</a>
+  </div>  --> 
+  <div class="item"><a class="sub-btn">More<i class="fas fa-angle-right dropdown"></i></a>
+<div class="sub-menu">
+<a class="sub-item" id="addaccountBtn">Add New Account</a>
+<a class="sub-item" id="allHistoryBtn">All History</a>
+<a class="sub-item" id="clientLoanBtn">Loan</a>
+<a href="http://localhost:8080/BankingApplication/MyServlett?page=deleteAccounts" class="sub-item">Delete Account</a>
+<a href="http://localhost:8080/BankingApplication/MyServlett?page=deleteCustomer" class="sub-item">Delete Customer</a>
+
 </div>
 </div>
 
+<div class="item"> <a href="http://localhost:8080/BankingApplication/MyServlett?page=logout" id="logout" >Logout</a></div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<div class="container">
+<div id="balance" style="color:green;  margin-left: 800px; "></div>
+
+<div id="accNumId" style="color:green"></div>
 <div class="allProcess" id="addAccount"></div>
 <div class="allProcess" id="withDraw"></div>
 <div class="allProcess" id="deposit"></div>
@@ -98,7 +155,7 @@
 <div class="allProcess" id="clientLoan"></div>
 <div class="allProcess" id="mobileRecharge"></div>
 <div class="allProcess" id="dthRecharge"></div>
-
+</div>
 <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 <script>
 function accountNumbers(x){
@@ -110,16 +167,16 @@ function accountNumbers(x){
 			type:'POST',
 			url:'MyServlett?y='+x+'&page=setSessionAccountNumber',
 			success: function(result){
-				alert("inside acc num set check 113");
+				//alert("inside acc num set check 113");
 				$("#accNumId").html('Current Acc Num '+ result);
 			} 
 		});
 		
 		$.ajax({
 			type:'POST',
-			url:'MyServlett?page=accountBalance',
+			url:'MyServlett?y='+x+'&page=accountBalance',
 			success: function(result){
-				alert("inside balance check 120");
+				//alert("inside balance check 120");
 				$("#balance").html(result);
 				$("#balance").show();
 				
@@ -131,46 +188,15 @@ function accountNumbers(x){
 	}
 }
 
-function update(x){
-	
-	if(x=="mobile"){
-		
-		 $(".allProcess").hide();
-		 $("#mobileUpdate").load("MobileUpdate.html");
-		 $("#mobileUpdate").show();
-		
-		
-	}
-	else if(x=="address"){
-		$(".allProcess").hide();
-		 $("#addressUpdate").load("AddressUpdate.html");
-		 $("#addressUpdate").show();
-	}
-	
 
-}
-
-function bills(x){
-	
-	
-	if(x=="mobile"){
-		$(".allProcess").hide();
-		 $("#mobileRecharge").load("MobileRecharge.html");
-		 $("#mobileRecharge").show();
-		
-	}
-	else if(x=="dth"){
-		$(".allProcess").hide();
-		 $("#dthRecharge").load("DthRecharge.html");
-		 $("#dthRecharge").show();
-
-	}
-}
 
 
 
 
 $(document).ready(function(){
+	
+	
+	
 	
 	$.ajax({
 		type:'POST',
@@ -191,24 +217,10 @@ $(document).ready(function(){
 		} 
 	});
 	
-	
-	
-	
-	/*  $("#balancebtn").click(function(){ 
-		
-		
-		$.ajax({
-			type:'POST',
-			url:'MyServlett?page=accountBalance',
-			success: function(result){
-				$("#balance").html(result);
-				$("#balance").show();
-				$(".allProcess").hide();
-				
-			} 
-		 }); 
-	});  
-	*/
+	 $(".sub-btn").click(function(){
+			$(this).next(".sub-menu").slideToggle(); 
+			$(this).find(".dropdown").toggleClass("rotate");
+		 });
 	
 	 $("#addaccountBtn").click(function(){
 		 $(".allProcess").hide();
@@ -239,7 +251,18 @@ $(document).ready(function(){
 		 $(".allProcess").hide();
 		 $("#withDraw").load("WithDraw.html");
 		 $("#withDraw").show();
-		
+			$.ajax({
+				type:'POST',
+				url:'MyServlett?y='+x+'&page=accountBalance',
+				success: function(result){
+					//alert("inside balance check 120");
+					$("#balance").html(result);
+					$("#balance").show();
+					
+					
+				} 
+			
+		}); 
 		 
 	 });
 	 
@@ -274,38 +297,45 @@ $(document).ready(function(){
 		
 		 
 	 });
+	 
+	 $("#mobileUpdateBtn").click(function(){
+		 $(".allProcess").hide();
+		 $("#mobileUpdate").load("MobileUpdate.html");
+		 $("#mobileUpdate").show();
+		
+		 
+	 });
+	 
+	 $("#addressUpdateBtn").click(function(){
+		 $(".allProcess").hide();
+		 $("#addressUpdate").load("AddressUpdate.html");
+		 $("#addressUpdate").show();
+		 
+	 });
+	 
+	 $("#mobileRechargeBtn").click(function(){
 	
+				$(".allProcess").hide();
+				 $("#mobileRecharge").load("MobileRecharge.html");
+				 $("#mobileRecharge").show();
+				
+			
+		 
+	 });
+	 
+	 $("#DTHRechargeBtn").click(function(){
+		 $(".allProcess").hide();
+		 $("#dthRecharge").load("DthRecharge.html");
+		 $("#dthRecharge").show();
+		 
+	 });
+	 
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	});
 </script>
 
-
-
+</body>
+</html>
 
 
 

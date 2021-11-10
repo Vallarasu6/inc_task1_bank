@@ -242,12 +242,12 @@ public class MyServlet extends HttpServlet {
 //Check balance - Account
     	
     	else if(query.equalsIgnoreCase("accountBalance")) {
-    		long accountNumber = (long) request.getSession().getAttribute("acc");
+        	long accountNumber = 	Long.parseLong(request.getParameter("y"));
     		boolean b = logicLayer.checkAccountNumber(accountNumber);
     		if(b==false) {
 			long balance = logicLayer.checkBalance(accountNumber);
           	out.print("Succesfully!!"
-          			+ "and your current Balance is : "+balance);
+          			+ "and your current Balance is : "+balance+" ACCNUM"+accountNumber);
     		}
     		else {
               	out.print("Enter the correct Account Number! Account number not exists");
@@ -421,7 +421,7 @@ public class MyServlet extends HttpServlet {
     	
  
     	 //Login
-    	
+    //-----------for cookie---------------------//
     	else if(query.equalsIgnoreCase("loginSubmit")) {
     		//out.print("user id or userName ");
     		int id = Integer.parseInt(request.getParameter("Id"));
@@ -444,8 +444,8 @@ public class MyServlet extends HttpServlet {
     			//request.getSession().setAttribute("acc", accountNumber);
     			//map = logicLayer.clientCache(accountNumber);
     			request.getSession().setAttribute("AccountNumberList", list);
-    			
-    			//System.out.print(list+" list");
+    		//String username = (String)	request.getSession().getAttribute("username");
+    			//System.out.print(username+" Username cookie check");
     			//out.print("true");
 
         		JSONArray values= new JSONArray();

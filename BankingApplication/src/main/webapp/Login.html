@@ -1,29 +1,142 @@
-<!-- <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-    <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
-    <%@ page import="java.util.ArrayList" %>
-<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Login</title>
 </head>
 <body>
-
-<%@ include file = "header.jsp" %>
-  <%@ include file = "LoginSideNav.jsp" %>
-<p id="one">
-
-</p>
-<div style="margin-left:175px;">
-
-
-
-
- <%@ include file = "footer.jsp" %>
+<div id="log1"></div>
+<div id="register"></div>
+     <div id="log">
+     
+    <div class="col">
+    <div class="container">
+    <div class="text-center">
+       <div class="form-group row" >
+        <label for="name" class="col-sm-12 col-form-label fw-bold mb-2 text-uppercase "><b>User Login</b></label>
+       
+    </div>
+    <div id="error" style="color:red"> </div>
+    <div class="form-group row" >
+   
+        <label for="name" class="col-sm-3 col-form-label">Id</label>
+        <div class="col-sm-9" >
+            <input type="text" name = "Id" class="form-control" onkeypress="isInputNumber(event)" id="id" placeholder="Enter your id" required>
+           <p id="idCheck" style="color:red" ></p>
+        </div>
+    </div>
+   
+    <div class="form-group row">
+        <label for="password" class="col-sm-3 col-form-label">Password</label>
+        <div class="col-sm-9">
+            <input type="password" name="Password" class="form-control"  id="password" placeholder="Enter your password" >
+            <p id="passwordCheck" style="color:red" ></p>
+            
+        </div>
+    </div>
+    
+    
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <button  id="btn1" class="btn btn-primary" onclick = "validate()" name="page" value="loginSubmit" > Login</button><br><br>
+            <p>Don't you have account?<button  id="registerBtn">Register here</button></p>
+          
+        </div>
+        </div>
+    </div>
+  
+  </div>
+ 
+ </div>
 </div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+<script type="text/javascript">
+
+
+function isInputNumber(evt){
+	var ch = String.fromCharCode(evt.which);
+	if(!(/[0-9]/.test(ch)))
+		evt.preventDefault();
+}
+
+
+
+function validate(){
+	var a = document.getElementById("id").value;
+	var b = document.getElementById("password").value;
+	
+	
+	if(a==''){
+		
+		document.getElementById("idCheck").innerHTML="Please enter your id";
+		 document.getElementById("idCheck").style.display='block';
+	}
+	else{
+		document.getElementById("idCheck").style.display='none';
+	} 
+if(b==''){
+		
+		document.getElementById("passwordCheck").innerHTML="Please enter your password";
+		 document.getElementById("passwordCheck").style.display='block';
+	}
+	else{
+		document.getElementById("passwordCheck").style.display='none';
+	} 
+if(document.getElementById("passwordCheck").style.display=='none' && document.getElementById("idCheck").style.display=='none' )
+	save();
+	} 
+	
+function save(){
+	var password = $("#password").val();
+	var Id = $("#id").val();
+
+	$.ajax({
+		type:'POST',
+		url:'MyServlett?Id='+Id+'&Password='+password+'&page=loginSubmit',
+		//url:'loginservlet?Id='+Id+'&Password='+password+'&page=loginSubmit',
+		success: function(result){
+			
+			if(result === "false"){
+				$("#error").html('User id or user name is Wrong');
+				
+			}
+		 else{
+			
+				$("#log").hide();
+				$("#log1").load("LoginSideNav.html");
+				
+	          
+				} 
+		}
+ 	});
+}
+
+$(document).ready(function(){
+
+$("#registerBtn").click(function(){
+	
+	 $("#log").hide(); 
+	$("#register").load("AddCustomer.html");
+	 $("#register").show(); 
+
+});
+
+});
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
 
 </body>
 </html>
-
- -->
