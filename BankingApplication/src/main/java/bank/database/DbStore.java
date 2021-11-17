@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.net.ssl.SSLEngineResult.Status;
 import javax.security.auth.message.callback.PrivateKeyCallback.AliasRequest;
 import javax.sound.midi.Soundbank;
 import javax.swing.text.html.HTMLDocument.Iterator;
@@ -116,6 +117,31 @@ PreparedStatement st = null;
 		}
 	}
     
+  //update loan status with amount
+    
+    public void loanStatusUpdateWithAmount(long accountNumber, String loanStatus,long loanAmount, int notifyStatus) {
+PreparedStatement st = null;
+        try {
+
+            String sql = "UPDATE accountInfo SET loanStatus = ?,loanAmount = ?,loanNotify=? WHERE customerAccountNumber = ?";
+            st = con.prepareStatement(sql);
+            st.setString(1,loanStatus);
+            st.setLong(2, loanAmount);
+            st.setInt(3, notifyStatus);
+            st.setLong(4, accountNumber);
+            st.executeUpdate();
+            System.out.println("Status changes in loan");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+			st.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+    
 //update change mobile number
     
     
@@ -202,11 +228,13 @@ PreparedStatement st = null;
     	           Long balance = rs.getLong("customerBalance");
     	           Integer status = rs.getInt("status");
     	           String loanStatus = rs.getString("loanStatus");
+    	           Long loanAmount = rs.getLong("loanAmount");
     	           object.setId(customer_id);
     	           object.setAccountNumber(accountNumber);
     	           object.setBankName(bankName);
     	           object.setBalance(balance);
     	           object.setLoanStatus(loanStatus);
+    	           object.setLoanAmount(loanAmount);
     	           map.put(AccountNumber, object);
 
              }
@@ -309,18 +337,31 @@ PreparedStatement st = null;
     public String checkLogin(int id, String password) {
     	PreparedStatement st = null;
     	ResultSet rst = null;
+    	int status=0;
     	//String string="Yes";
     	//String password = null;
     	//ArrayList<Long> accountNumberArrayList = new ArrayList<Long>();
     	 try {
+    		 System.out.print("status "+status);
     	    	String sql1 = "SELECT * from customerInfo where customerId= ? and password=MD5(?) and customerStatus=1";
     	    	st = con.prepareStatement(sql1);
     	    	st.setInt(1, id);
     	    	st.setString(2, password);
     	    	rst = st.executeQuery();
     	 	   if(rst.next()) {
+    	 		
     	 		return "yes";
     	 		   }
+    	 	   
+    	 	  String sql2 = "SELECT * from customerInfo where customerId= ? and password=MD5(?) and customerStatus=2";
+  	    	st = con.prepareStatement(sql2);
+  	    	st.setInt(1, id);
+  	    	st.setString(2, password);
+  	    	rst = st.executeQuery();
+  	 	   if(rst.next()) {
+  	 		return "admin";
+  	 		   }
+  	 	   
     	 }
     	 catch (Exception e) {
     		 System.out.print(e+" Error msg");
@@ -331,12 +372,13 @@ PreparedStatement st = null;
     
     //show customerList - Active
 public ArrayList<CustomerInfo> getCustomerList() {
+	
 	ArrayList<CustomerInfo> customerList = new ArrayList<CustomerInfo>();
 	Statement st = null;
     ResultSet rs = null;
     try {
         st = con.createStatement();
-        rs = st.executeQuery("SELECT * from customerInfo where customerStatus=1");
+        rs = st.executeQuery("SELECT * from customerInfo  where customerStatus=1 limit 10");
 
         while (rs.next()) {
             CustomerInfo object = new CustomerInfo();
@@ -522,10 +564,12 @@ public ArrayList<AccountInfo> getApprovedLoanList() {
        Long accountNumber = rs.getLong("customerAccountNumber");
        String bankName = rs.getString("customerBankName");
        Long balance = rs.getLong("customerBalance");
+       Long loanAmount = rs.getLong("loanAmount");
        object.setId(customer_id);
        object.setAccountNumber(accountNumber);
        object.setBankName(bankName);
        object.setBalance(balance);
+       object.setLoanAmount(loanAmount);
        accountList.add(object);
 
     }
@@ -541,6 +585,7 @@ public ArrayList<AccountInfo> getApprovedLoanList() {
 
 //show Applied loan list
 public ArrayList<AccountInfo> getAppliedLoanList() {
+	//System.out.print("loan AMount Hi");
 	ArrayList<AccountInfo> accountList = new ArrayList<AccountInfo>();
 	
 	PreparedStatement st = null;
@@ -559,12 +604,15 @@ public ArrayList<AccountInfo> getAppliedLoanList() {
          Long accountNumber = rs.getLong("customerAccountNumber");
          String bankName = rs.getString("customerBankName");
          Long balance = rs.getLong("customerBalance");
+         Long loanAmount = rs.getLong("loanAmount");
+         //System.out.print("loan Amount "+loanAmount);
          object.setId(customer_id);
          object.setAccountNumber(accountNumber);
          object.setBankName(bankName);
          object.setBalance(balance);
+         object.setLoanAmount(loanAmount);
          accountList.add(object);
-
+         System.out.print(object);
       }
   }
       catch (Exception e) {
@@ -597,10 +645,12 @@ public ArrayList<AccountInfo> getWaitingLoanList() {
        Long accountNumber = rs.getLong("customerAccountNumber");
        String bankName = rs.getString("customerBankName");
        Long balance = rs.getLong("customerBalance");
+       Long loanAmount = rs.getLong("loanAmount");
        object.setId(customer_id);
        object.setAccountNumber(accountNumber);
        object.setBankName(bankName);
        object.setBalance(balance);
+       object.setLoanAmount(loanAmount);
        accountList.add(object);
 
     }
@@ -634,10 +684,12 @@ try {
      Long accountNumber = rs.getLong("customerAccountNumber");
      String bankName = rs.getString("customerBankName");
      Long balance = rs.getLong("customerBalance");
+     Long loanAmount = rs.getLong("loanAmount");
      object.setId(customer_id);
      object.setAccountNumber(accountNumber);
      object.setBankName(bankName);
      object.setBalance(balance);
+     object.setLoanAmount(loanAmount);
      accountList.add(object);
 
   }
@@ -855,7 +907,7 @@ public void updateBalance(long balance,long acc_number) throws SQLException {
 
 
 
-
+//history
 
 public void history(long accountNumber,String process,long balance, long bankCharge,long updatedBalance) {
 PreparedStatement st = null;
@@ -882,6 +934,36 @@ PreparedStatement st = null;
 	e.printStackTrace();
 }
 }
+
+//bills
+
+public void bill(long accountNumber,String process,long number, long balance) {
+PreparedStatement st = null;
+    
+    try {
+        String sql = "INSERT INTO bills (customerAccountNumber,process,number,amount,date) VALUES (?, ?, ?, ?,now())";
+        st = con.prepareStatement(sql);
+            st.setLong(1, accountNumber);
+            st.setString(2, process); 
+            st.setLong(3, number); 
+            st.setLong(4, balance); 
+            
+               
+            st.executeUpdate();
+           }
+    catch (Exception e){
+        System.out.println("toString(): " + e.toString());
+        System.out.println("getMessage(): " + e.getMessage());
+   }
+   try {
+	st.close();
+} catch (SQLException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+}
+
+
  
     //use
     
@@ -892,7 +974,7 @@ PreparedStatement st = null;
         int cusIdArray=0;
         int[] batchResults=new int[1];
         try {
-            String sql = "INSERT INTO customerInfo (customerName,customerMobile,customerStatus,address,password) VALUES (?, ?, ?, ?, MD5(?))";
+            String sql = "INSERT INTO customerInfo (customerName,customerMobile,customerStatus,address,password,notification) VALUES (?, ?, ?, ?, MD5(?),0)";
             st = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
                 String name = passData.getName();
@@ -930,6 +1012,236 @@ PreparedStatement st = null;
         return cusIdArray;
     }
     
+    //notification
+    
+    public int notification() {
+		
+    	PreparedStatement st = null;
+    	ResultSet rs = null;
+    	int count=0;
+    	//long balance=0;
+        try {
+        	String sql1 = "SELECT * FROM customerInfo where notification=?";
+        	st = con.prepareStatement(sql1);
+        	st.setInt(1,0);
+        	rs = st.executeQuery();
+          while (rs.next()) {
+             
+             count++;
+          }
+          
+      }
+          catch (Exception e) {
+          	System.out.println(e);
+          }
+        return count;
+    	
+	}
+    
+    public void customerCountList(int count) {
+    	
+    	
+    	
+    }
+    
+    //label data
+
+    
+    public int[] labelData() {
+    	PreparedStatement st = null;
+    	ResultSet rs = null;
+    	int count=0,i=0;
+    	int count1=0;
+    	int size[]=new int[9];
+        try {
+        	String sql1 = "SELECT * FROM customerInfo where 1=?";
+        	st = con.prepareStatement(sql1);
+        	st.setInt(1,1);
+        	rs = st.executeQuery();
+          while (rs.next()) {
+             
+             count++;
+          }
+          size[i]=count;
+          i++;
+          count=0;
+          String sql2 = "SELECT * FROM accountInfo where 1=?";
+      	st = con.prepareStatement(sql2);
+      	st.setInt(1,1);
+      	rs = st.executeQuery();
+        while (rs.next()) {
+           
+           count++;
+        }
+        size[i]=count;
+        i++;
+        count=0;
+        String sql3 = "SELECT * FROM customerInfo where customerStatus=?";
+      	st = con.prepareStatement(sql3);
+      	st.setInt(1,0);
+      	rs = st.executeQuery();
+        while (rs.next()) {
+           
+           count++;
+        }
+        size[i]=count;
+        i++;
+        count=0;
+        String sql4 = "SELECT * FROM accountInfo where status=?";
+      	st = con.prepareStatement(sql4);
+      	st.setInt(1,0);
+      	rs = st.executeQuery();
+        while (rs.next()) {
+           
+           count++;
+        }
+        size[i]=count;
+        i++;
+        count=0;
+        String sql5 = "SELECT * FROM history where 1=?";
+      	st = con.prepareStatement(sql5);
+      	st.setInt(1,1);
+      	rs = st.executeQuery();
+        while (rs.next()) {
+           
+           count++;
+        }
+        size[i]=count;
+        i++;
+        count=0;
+        String sql6 = "SELECT * FROM accountInfo where loanStatus=?";
+      	st = con.prepareStatement(sql6);
+      	st.setString(1,"Processing");
+      	rs = st.executeQuery();
+        while (rs.next()) {
+           
+           count++;
+        }
+        size[i]=count;
+        i++;
+        count=0;
+        String sql7 = "SELECT * FROM accountInfo where loanStatus=?";
+      	st = con.prepareStatement(sql7);
+      	st.setString(1,"Approved");
+      	rs = st.executeQuery();
+        while (rs.next()) {
+           
+           count++;
+        }
+        size[i]=count;
+        i++;
+        count=0;
+        String sql8 = "SELECT * FROM accountInfo where loanStatus=?";
+      	st = con.prepareStatement(sql8);
+      	st.setString(1,"Waiting List");
+      	rs = st.executeQuery();
+        while (rs.next()) {
+           
+           count++;
+        }
+        size[i]=count;
+        i++;
+        count=0;
+        String sql9 = "SELECT * FROM accountInfo where loanStatus=?";
+      	st = con.prepareStatement(sql9);
+      	st.setString(1,"Blocked");
+      	rs = st.executeQuery();
+        while (rs.next()) {
+           
+           count++;
+        }
+        size[i]=count;
+        
+      }
+          catch (Exception e) {
+          	System.out.println(e);
+          }
+        System.out.println(size[0]+" "+size[1]+" "+size[8]+" hiiiii ");
+        return size;
+	}
+    
+    
+  //notificationUpdate
+    
+    public void notificationUpdate() {
+		
+    	PreparedStatement st = null;
+    	//ResultSet rs = null;
+    	int count=0;
+    	//long balance=0;
+        try {
+        	String sql1 = "UPDATE customerInfo set notification=? where notification=?";
+        	st = con.prepareStatement(sql1);
+        	st.setInt(1,1);
+        	st.setInt(2,0);
+        	st.executeUpdate();
+//          while (rs.next()) {
+//             
+//             count++;
+//          }
+        	//System.out.println("Notified");
+      }
+          catch (Exception e) {
+          	System.out.println(e);
+          }
+//        return count;
+    	
+	}
+    
+    //notification loan
+   public int notificationLoan() {
+		
+    	PreparedStatement st = null;
+    	ResultSet rs = null;
+    	int count=0;
+    	//long balance=0;
+        try {
+        	String sql1 = "SELECT * FROM accountInfo where loanNotify=? AND loanStatus=?";
+        	st = con.prepareStatement(sql1);
+        	st.setInt(1,0);
+        	st.setString(2,"Processing");
+        	rs = st.executeQuery();
+          while (rs.next()) {
+             
+             count++;
+          }
+          
+      }
+          catch (Exception e) {
+          	System.out.println(e);
+          }
+        return count;
+    	
+	}
+   
+   //notificationUpdate
+   
+   public void notificationLoanUpdate() {
+		System.out.print("update notify2");
+   	PreparedStatement st = null;
+   	//ResultSet rs = null;
+   	int count=0;
+   	//long balance=0;
+       try {
+       	String sql1 = "UPDATE accountInfo set loanNotify=? where loanNotify=? AND loanStatus=?";
+       	st = con.prepareStatement(sql1);
+       	st.setInt(1,1);
+    	st.setInt(2,0);
+       	st.setString(3,"Processing");
+       	st.executeUpdate();
+//         while (rs.next()) {
+//            
+//            count++;
+//         }
+       	//System.out.println("Notified");
+     }
+         catch (Exception e) {
+         	System.out.println(e);
+         }
+//       return count;
+   	
+	}
+    
     //use
     
     public int insertToAccountTable(AccountInfo accountInfo) throws SQLException {
@@ -939,25 +1251,28 @@ PreparedStatement st = null;
         int[] batchResults = new int[1];
         int cusAccNumber=0;
         try {
-            String sql = "INSERT INTO accountInfo (customerId,customerBankName,customerBalance,status,loanStatus) VALUES ( ?, ?, ?, ?, ?)";
-            st = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-//            st = con.prepareStatement(sql);
-               
-                int id = passDataAccount.getId();
-                String bankName = passDataAccount.getBankName();
-                long balance = passDataAccount.getBalance();
-                st.setInt(1, id);
-                st.setString(2, bankName);
-                st.setLong(3, balance);
-                st.setInt(4,1);
-                st.setString(5, "NotApplied");
-                st.addBatch();
-         
+        	 String sql = "INSERT INTO accountInfo (customerId,customerBankName,customerBalance,status,loanStatus,loanNotify) VALUES ( ?, ?, ?, ?, ?,?)";
+             st = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+//             st = con.prepareStatement(sql);
+                
+                 int id = passDataAccount.getId();
+                 System.out.println("id value "+id);
+                 String bankName = passDataAccount.getBankName();
+                 long balance = passDataAccount.getBalance();
+                 st.setInt(1, id);
+                 st.setString(2, bankName);
+                 st.setLong(3, balance);
+                 st.setInt(4,1);
+                 st.setString(5, "NotApplied");
+                 st.setInt(6, 0);
+                 st.addBatch();
             batchResults = null;
-
+            System.out.println("id value1 "+id);
             batchResults = st.executeBatch();
+            System.out.println("id value2 "+id);
             //con.commit();
             ResultSet generatedKeysResultSet = st.getGeneratedKeys();
+            System.out.println("id value3 "+id);
             while (generatedKeysResultSet.next()) {
                 cusAccNumber = generatedKeysResultSet.getInt(1);
                 
@@ -1015,6 +1330,18 @@ PreparedStatement st = null;
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+//	@Override
+//	public ArrayList<CustomerInfo> getCustomerListintArrayList(int count) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+
+//	@Override
+//	public void bill(long accountNumber, String process, long mobile, long balance) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 //	@Override
 //	public ArrayList<TransactionHistoryPojo> showTransactionHistory() {

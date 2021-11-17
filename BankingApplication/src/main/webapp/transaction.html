@@ -10,11 +10,11 @@
 <body>
 
 
-<div style="margin-left:170px;">
-   <div id="SuccessMsg" style="color:green"></div>
+<div>
+   <div id="SuccessMsgs" style="color:green"></div>
      <div class="form-group row">
-        <label for="name" class="col-sm-2 col-form-label">Enter Amount</label>
-        <div class="col-sm-10">
+        <label for="name" class="col-sm-2 col-form-label">Amount</label>
+        <div class="col-sm-6">
             <input type="text" name = "amount" class="form-control" onkeypress="isInputNumber(event)" id="amount" placeholder="Enter Amount" required>
             <p id="amountCheck" style="color:red" ></p>
         </div>
@@ -22,8 +22,8 @@
     
   
     <div class="form-group row">
-        <label for="accountNumber" class="col-sm-2 col-form-label">Enter receiver Account Number</label>
-        <div class="col-sm-10">
+        <label for="accountNumber" class="col-sm-2 col-form-label">Receiver Account Number</label>
+        <div class="col-sm-6">
             <input type="text" name="receiverAccountNumber" onkeypress="isInputNumber(event)" class="form-control" id="receiverAccountNumber" placeholder="Enter receiver Account Number" required>
             <p id="accNumCheck" style="color:red" ></p>
         </div>
@@ -44,9 +44,9 @@
         <div class="col-sm-6 text-center">
             <button id=transactionBtn class="btn btn-primary" onclick = "validate()" name="page" value="transactionSubmit">Submit</button>
         </div>
-        <div class="col-sm-6 text-center">
+       <!--  <div class="col-sm-6 text-center">
             <button type="submit" class="btn btn-warning">Reset</button>
-        </div>
+        </div> -->
     </div>
 
 
@@ -82,9 +82,11 @@ if(d==''){
 		document.getElementById("accNumCheck").style.display='none';
 	} 
 	
-	if(document.getElementById("accNumCheck").style.display=='none' && document.getElementById("amountCheck").style.display=='none')
+	if(document.getElementById("accNumCheck").style.display=='none' && document.getElementById("amountCheck").style.display=='none'){
+		
 		save();
-		/*  alert("save"); */
+		   
+	}
 		} 
 
 
@@ -96,8 +98,8 @@ function save(){
 		type:'POST',
 		url:'MyServlett?amount='+amount+'&receiverAccountNumber='+receiverAccountNumber+'&page=transactionSubmit',
 		success: function(result){
-			
-			$("#SuccessMsg").html(result);
+			alert(result);
+			$("#SuccessMsgs").html(result);
 			
 		} 
 	});

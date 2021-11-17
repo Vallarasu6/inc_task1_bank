@@ -7,13 +7,14 @@
 </head>
 <body>
 
-  <div style="margin-left:175px;">
+  <div>
    <div id="SuccessMsgs" style="color:green"></div>
    <div id="oldAddress"></div><br>
 <div class="form-group row">
-        <label for="name" class="col-sm-2 col-form-label">Enter Your new address</label>
+        <label for="name" class="col-sm-2 col-form-label">New Address</label>
         <div class="col-sm-10">
-            <input type="text" name = "addressUpdate" class="form-control" id="address_updates" placeholder="Enter new address" required>
+                        <textarea rows="4" cols="100" name = "addressUpdate" class="form-control" id="address_updates"></textarea>
+            
             <p id="addressCheck" style="color:red" ></p>
         </div>
     </div>
@@ -37,7 +38,7 @@ $(document).ready(function(){
 		url:'MyServlett?page=oldAddress',
 		success: function(result){
 			 
-			 $('#oldAddress').html("Your old address is :"+result);
+			 $('#oldAddress').html("Old Address :"+result);
 		} 
 	});
 	

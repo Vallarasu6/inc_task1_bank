@@ -7,12 +7,12 @@
 </head>
 <body>
 
-  <div style="margin-left:175px;">
+  <div>
    <div id="SuccessMsg" style="color:green"></div>
      <div id="oldNumber"></div><br>
 <div class="form-group row">
-        <label for="name" class="col-sm-2 col-form-label">Enter Your new mobile Number</label>
-        <div class="col-sm-10">
+        <label for="name" class="col-sm-2 col-form-label">New Mobile Number</label>
+        <div class="col-sm-6">
             <input type="text" name = "mobileUpdate" class="form-control" id="mobile_update" placeholder="Enter mobile number"  required>
             <p id="mobileCheck" style="color:red" ></p>
         </div>
@@ -36,7 +36,7 @@ $(document).ready(function(){
 		url:'MyServlett?page=oldMobile',
 		success: function(result){
 			 /* alert(result);  */
-			 $('#oldNumber').html("Your old Mobile number is : "+result);
+			 $('#oldNumber').html("Mobile Number: "+result);
 		} 
 	});
 	
@@ -55,6 +55,11 @@ if(b==''){
 		document.getElementById("mobileCheck").innerHTML="Please enter your mobile number";
 		 document.getElementById("mobileCheck").style.display='block';
 	}
+else if(b.length!=10){
+	
+	document.getElementById("mobileCheck").innerHTML="Mobile number must be 10 digit";
+ 	document.getElementById("mobileCheck").style.display='block';
+}
 	else{
 		document.getElementById("mobileCheck").style.display='none';
 	} 

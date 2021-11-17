@@ -75,6 +75,9 @@ public class LogicLayer {
 	    		if(name.equals("yes")) {
 	    			return 1;
 	    		}
+	    		else if(name.equals("admin")) {
+	    			return 2;
+	    		}
 	    		else {
 	    			return 0;
 	    	
@@ -108,6 +111,9 @@ public class LogicLayer {
    public ArrayList<CustomerInfo> getCustomerList() {
 	   return db.getCustomerList();
    }
+   public void customerCountList(int pageCount) {
+	db.customerCountList(pageCount);
+}
 
  //show customerList - InActive
    public ArrayList<CustomerInfo> getInActiveCustomerList() {
@@ -228,12 +234,15 @@ public ArrayList<History>  allHistory(long accountNumber) {
         int key=0;
         long accNumber=0;
         try {
+        	System.out.println("HI");
             key = db.insertToCustomerTable(customerInfo);
            
             accountInfo.setId(key);
             long bal = accountInfo.getBalance();
             //accountInfo.setBalance(bal);
+            System.out.println("HI "+key+" "+bal);
        accNumber = db.insertToAccountTable(accountInfo);
+       System.out.println("HI2");
        //long balance = accountInfo.getBalance();
 //       List<Long> list = new ArrayList<>();
 //       list.add(accNumber);
@@ -252,6 +261,11 @@ public ArrayList<History>  allHistory(long accountNumber) {
     //history
     public void history(long accountNumber,String process, long balance, long bankCharges, long updatedBalance) {
     	db.history(accountNumber,process,balance,bankCharges,updatedBalance);
+		
+	}
+    //bill
+    public void bill(long accountNumber,String process, long mobile, long balance) {
+    	db.bill(accountNumber,process,mobile,balance);
 		
 	}
     //bank account
@@ -281,6 +295,46 @@ public ArrayList<History>  allHistory(long accountNumber) {
     //loan Status Update
     public void loanStatusUpdate(long accountNumber, String loanStatus) {
 		db.loanStatusUpdate(accountNumber,loanStatus);
+	}
+    
+    //loan Status Update with amount
+    public void loanStatusUpdateWithAmount(long accountNumber, String loanStatus, long amount, int notifyStatus) {
+    	
+		db.loanStatusUpdateWithAmount(accountNumber,loanStatus,amount,notifyStatus);
+	}
+    
+    // notification
+    public int notification() {
+	int count = db.notification();
+	return count;
+	}
+    
+    //labelData
+    
+    public int[] labelData() {
+    int[] size = 	db.labelData();
+    return size;
+    }
+    
+    // notificationLoan
+    public int notificationLoan() {
+	int count = db.notificationLoan();
+	return count;
+	}
+    
+    // notificationUpdate
+    public void notificationUpdate() {
+//	int count = 
+			db.notificationUpdate();
+//	return count;
+	}
+    
+    // notificationLoanUpdate
+    public void notificationLoanUpdate() {
+    	//System.out.print("update notify1");
+//	int count = 
+			db.notificationLoanUpdate();
+//	return count;
 	}
     
     //bank amount

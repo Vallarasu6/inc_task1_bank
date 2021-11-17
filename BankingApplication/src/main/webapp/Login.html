@@ -5,8 +5,8 @@
 </head>
 <body>
 <div id="log1"></div>
-<div id="register"></div>
-     <div id="log">
+<div id="admin1"></div>
+     <div id="logs">
      
     <div class="col">
     <div class="container">
@@ -20,7 +20,7 @@
    
         <label for="name" class="col-sm-3 col-form-label">Id</label>
         <div class="col-sm-9" >
-            <input type="text" name = "Id" class="form-control" onkeypress="isInputNumber(event)" id="id" placeholder="Enter your id" required>
+            <input type="number" name = "Id" class="form-control"  id="id" placeholder="Enter your id" required>
            <p id="idCheck" style="color:red" ></p>
         </div>
     </div>
@@ -38,7 +38,7 @@
     <div class="form-group row">
         <div class="col-sm-12">
             <button  id="btn1" class="btn btn-primary" onclick = "validate()" name="page" value="loginSubmit" > Login</button><br><br>
-            <p>Don't you have account?<button  id="registerBtn">Register here</button></p>
+            <!-- <p>Don't you have account?<button id="registerBtns" class="btn btn-primary " >Register</button></p> -->
           
         </div>
         </div>
@@ -63,6 +63,7 @@ function isInputNumber(evt){
 
 
 function validate(){
+	
 	var a = document.getElementById("id").value;
 	var b = document.getElementById("password").value;
 	
@@ -98,32 +99,38 @@ function save(){
 		success: function(result){
 			
 			if(result === "false"){
-				$("#error").html('User id or user name is Wrong');
+				$("#error").html('User id or password is Wrong');
 				
+			}
+			else if(result === "admin"){
+				$("#logs").hide();
+				$("#admin1").load("sidenav.html");
+				$("#admin1").show();
+				$("#btns").hide();
 			}
 		 else{
 			
-				$("#log").hide();
+				$("#logs").hide();
 				$("#log1").load("LoginSideNav.html");
+				$("#btns").hide();
 				
-	          
 				} 
 		}
  	});
 }
 
-$(document).ready(function(){
+/* $(document).ready(function(){
 
-$("#registerBtn").click(function(){
-	
-	 $("#log").hide(); 
-	$("#register").load("AddCustomer.html");
-	 $("#register").show(); 
-
-});
+$("#registerBtns").click(function(){
+	alert("hi");
+	 $("#logs").hide(); 
+	$("#registers").load("AddCustomer.html");
+	 $("#registers").show(); 
 
 });
 
+});
+ */
 
 
 

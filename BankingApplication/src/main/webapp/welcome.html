@@ -7,12 +7,12 @@
      <script type="text/javascript" 
      src="https://code.jquery.com/jquery-3.5.1.js">
      </script>
-     <script>
+    <!--  <script>
      $(function(){
     	 $('#header').load("HeaderWelcome.html");
     	
      });
-     </script>
+     </script> -->
   <style>
 
 html{
@@ -58,20 +58,32 @@ body{
   color : #FFF;
   height:100%
 }
-
-
 </style>
   
 </head>
 <body>
-<div id="header"></div>
-  <div class="index"  id="login"></div>
-  <div class="index" id="register"></div>
+<div id="header">
+<nav class="navbar navbar-light bg-light" >
+    <a class="navbar-brand" href="#"><b>Z</b><i>Pay</i>
+    </a>
+    <div id="btns">
+    <button id="homeBtn" class="btn btn-primary " >Home</button>&nbsp;
+   <button id="loginBtn" class="btn btn-primary " >Login</button>&nbsp;
+    <button id="registerBtn" class="btn btn-primary " >Register</button>
+    </div>
+    
+ 
+</nav>
+</div>
+
+
+
+ <div class="index"  id="login"></div>
+ <div class="index" id="registers"></div>
    <div class="index"  id="admin"></div>
-   <div class="index" >
- <div class="container">
- <button id="loginBtn">Login</button>
- <button id="registerBtn">Register</button>
+   
+ <div class="index container" id="content">
+
  <p>
  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam euismod malesuada auctor. Nullam elementum elit felis, in convallis nisl volutpat vitae. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nulla facilisi. Pellentesque vel cursus elit. In euismod ex sed nisi rhoncus, sit amet ultrices sem tincidunt. Fusce pulvinar ex quis dui sollicitudin tincidunt. Etiam metus lorem, venenatis ac erat nec, dapibus semper arcu. Suspendisse auctor massa quis neque molestie, non accumsan nisl vulputate. Vestibulum sed euismod quam.
 
@@ -81,35 +93,50 @@ consectetur. Etiam vitae volutpat sapien. Suspendisse sapien odio, iaculis ut or
  </p>
 
 
-    <div>
+  <!--   <div>
     <button id="adminBtn"> Admin</button>
-   </div>
+   </div> -->
    
-    
-
-    </div>
+ </div>
 
 
 <div id="footer"></div>
 
-</div>
 <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 <script type="text/javascript">
 
 
 
  $(document).ready(function(){
+	 
+	 $("#homeBtn").click(function(){
+			
+			$(".index").hide();
+			//$("#admin").load("sidenav.html");
+			$("#content").show();
+		
+});
+
+	 $("#registerBtn").click(function(){
+			
+			$(".index").hide();
+			
+			$("#registers").load("AddCustomer.html");
+			$("#registers").show();
+			
+		
+	}); 
 	
-	$("#adminBtn").click(function(){
+	/* $("#adminBtn").click(function(){
 		
 				$(".index").hide();
 				$("#admin").load("sidenav.html");
 				$("#admin").show();
 			
-	});
+	}); */
 	
 	
-	$("#loginBtn").click(function(){
+	 $("#loginBtn").click(function(){
 		
 		$(".index").hide();
 		
@@ -117,16 +144,9 @@ consectetur. Etiam vitae volutpat sapien. Suspendisse sapien odio, iaculis ut or
 		$("#login").show();
 		
 	
-});
+}); 
 	
-	$("#registerBtn").click(function(){
-		
-		$(".index").hide();
-		$("#register").load("AddCustomer.html");
-		$("#register").show();
-	
-});
-	
+ 
 	
 	
 });

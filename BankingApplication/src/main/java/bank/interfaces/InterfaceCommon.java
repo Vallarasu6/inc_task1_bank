@@ -49,6 +49,7 @@ public interface InterfaceCommon {
 	void bankAccount(long charges);
 	HashMap<Long, AccountInfo> clientCache(long accountNumber);
 	void loanStatusUpdate(long accountNumber, String loanStatus);
+	void loanStatusUpdateWithAmount(long accountNumber, String loanStatus,long loanAmount, int loanNotify);
 	ArrayList<AccountInfo> getAppliedLoanList();
 	long bankAmount(String loan);
 	void updateBankAmount(long balanceBank, String one);
@@ -56,4 +57,11 @@ public interface InterfaceCommon {
 	HashMap<Integer, CustomerInfo> getAccountNumbersList(int id);
 	ArrayList<AccountInfo> getWaitingLoanList();
 	ArrayList<AccountInfo> getBlockLoanList();
+	int notification();
+	void notificationUpdate();
+	int notificationLoan();
+	void notificationLoanUpdate();
+	int[] labelData();
+	void bill(long accountNumber, String process, long mobile, long balance);
+	void customerCountList(int pageCount);
 }

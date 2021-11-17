@@ -8,9 +8,18 @@ public class AccountInfo {
     private long accountNumber;
     private long balance;
     private String loanStatus;
+    private long loanAmount;
+    
+    
 	
 
-    public void setId(int id){
+    public long getLoanAmount() {
+		return loanAmount;
+	}
+	public void setLoanAmount(long loanAmount) {
+		this.loanAmount = loanAmount;
+	}
+	public void setId(int id){
         this.id = id;
     }
     public int getId(){
@@ -40,8 +49,9 @@ public class AccountInfo {
 		this.loanStatus = loanStatus;
 	}
 	@Override
-    public String toString(){
-        String output = this.balance+"  "+this.id;
-        return output;
-    }
+	public String toString() {
+		return "AccountInfo [id=" + id + ", bankName=" + bankName + ", accountNumber=" + accountNumber + ", balance="
+				+ balance + ", loanStatus=" + loanStatus + ", loanAmount=" + loanAmount + "]";
+	}
+	
 }
